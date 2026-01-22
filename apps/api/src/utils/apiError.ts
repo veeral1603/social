@@ -3,8 +3,8 @@ export default class ApiError extends Error {
   errors?: Record<string, unknown> | null = null;
 
   constructor(
-    status: number,
     message: string,
+    status: number,
     errors?: Record<string, unknown> | null,
   ) {
     super(message);

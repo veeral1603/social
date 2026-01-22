@@ -9,7 +9,7 @@ const registerUser = apiHandler(
   async (req: Request<{}, {}, RegisterFormData>, res: Response) => {
     const data = req.body;
     const user = await authService.registerUser(data);
-    successResponse(res, "OTP sent successfully", user, 201);
+    successResponse(res, "Verification link sent successfully", user, 201);
   },
 );
 

@@ -7,6 +7,7 @@ import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
 import { comparePassword, hashPassword } from "../../lib/password";
 import { generateToken, verifyToken } from "../../lib/jwt";
+import { sendVerificationEmail } from "../../lib/email";
 
 async function registerUser(data: RegisterFormData): Promise<PublicUser> {
   const existingUser = await prisma.user.findUnique({
@@ -17,9 +18,10 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
   }
 
   const hashedPassword = await hashPassword(data.password);
-  const token = await generateToken({ email: data.email }, "15m");
-
-  console.log("Hashed Password:", hashedPassword, token);
+  const emailVerificationToken = await generateToken(
+    { email: data.email },
+    "15m",
+  );
 
   const user = await prisma.user.create({
     data: {
@@ -28,7 +30,7 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
       lastName: data.lastName || null,
       username: data.username,
       password: hashedPassword,
-      verifyToken: token,
+      verifyToken: emailVerificationToken,
       verifyTokenExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
     },
     select: {
@@ -44,7 +46,8 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
     throw new ApiError("Failed to create user.", 500);
   }
 
-  console.log(`Verification Token: ${token}`);
+  // console.log(`Verification Token: ${emailVerificationToken}`);
+  await sendVerificationEmail(user.email, emailVerificationToken);
 
   return user;
 }
@@ -84,15 +87,19 @@ async function resendVerificationLink(email: string): Promise<void> {
   if (user.isVerified) {
     throw new ApiError("Email is already verified.", 400);
   }
-  const token = await generateToken({ email: user.email }, "15m");
+  const emailVerificationToken = await generateToken(
+    { email: user.email },
+    "15m",
+  );
   await prisma.user.update({
     where: { email: user.email },
     data: {
-      verifyToken: token,
+      verifyToken: emailVerificationToken,
       verifyTokenExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
     },
   });
-  console.log(`Resent Verification Token: ${token}`);
+  // console.log(`Resent Verification Token: ${emailVerificationToken}`);
+  await sendVerificationEmail(user.email, emailVerificationToken);
 }
 
 async function loginUser(

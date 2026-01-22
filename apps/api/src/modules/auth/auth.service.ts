@@ -13,17 +13,20 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
   });
-  if (existingUser) {
-    throw new ApiError("A user with this email already exists.", 400);
-  }
+  if (existingUser)
+    throw new ApiError("User with this email already exists.", 400);
+
+  const existingUsername = await prisma.profile.findUnique({
+    where: { username: data.username },
+  });
+  if (existingUsername) throw new ApiError("Username is already taken.", 400);
 
   const hashedPassword = await hashPassword(data.password);
   const emailVerificationToken = await generateToken(
     { email: data.email },
     "15m",
   );
-
-  const user = await prisma.user.create({
+  const tempUser = await prisma.signupSession.create({
     data: {
       email: data.email,
       firstName: data.firstName,
@@ -42,105 +45,124 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
     },
   });
 
-  if (!user) {
-    throw new ApiError("Failed to create user.", 500);
-  }
+  await sendVerificationEmail(tempUser.email, emailVerificationToken);
 
-  // console.log(`Verification Token: ${emailVerificationToken}`);
-  await sendVerificationEmail(user.email, emailVerificationToken);
-
-  return user;
+  return tempUser as PublicUser;
 }
 
-async function verifyUserEmail(token: string): Promise<string> {
-  const user = await prisma.user.findFirst({ where: { verifyToken: token } });
-  if (!user) {
-    throw new ApiError("Invalid or expired verification token.", 400);
-  }
-  if (user.isVerified) {
-    throw new ApiError("Email is already verified.", 400);
-  }
+async function verifyUserEmail(
+  token: string,
+): Promise<{ user: PublicUser; access_token: string }> {
   const payload = await verifyToken<{ email: string }>(token);
-  if (payload.email !== user.email) {
-    throw new ApiError("Invalid verification token.", 400);
+  if (!payload || !payload.email) {
+    throw new ApiError("Token payload is invalid.", 400);
   }
-  await prisma.user.update({
-    where: { email: user.email },
-    data: {
-      isVerified: true,
-      verifyToken: null,
-      verifyTokenExpiry: null,
-    },
+
+  const tempUser = await prisma.signupSession.findFirst({
+    where: { email: payload.email, verifyToken: token },
   });
+
+  if (!tempUser) {
+    throw new ApiError("Invalid or expired token.", 400);
+  }
+
+  if (tempUser.verifyTokenExpiry < new Date()) {
+    throw new ApiError("Token has expired.", 400);
+  }
+
+  const { userId } = await prisma.$transaction(async (tx) => {
+    const newUser = await tx.user.create({
+      data: {
+        email: tempUser.email,
+        password: tempUser.password,
+        isVerified: true,
+      },
+    });
+
+    await tx.profile.create({
+      data: {
+        userId: newUser.id,
+        firstName: tempUser.firstName,
+        lastName: tempUser.lastName ?? null,
+        username: tempUser.username,
+      },
+    });
+
+    await tx.signupSession.delete({
+      where: { id: tempUser.id },
+    });
+
+    return { userId: newUser.id };
+  });
+
   const access_token = await generateToken(
-    { userId: user.id, email: user.email },
+    { userId, email: tempUser.email },
     "14d",
   );
-  return access_token;
+
+  const publicUser: PublicUser = {
+    id: userId,
+    firstName: tempUser.firstName,
+    lastName: tempUser.lastName ?? null,
+    email: tempUser.email,
+    username: tempUser.username,
+  };
+
+  return { user: publicUser, access_token };
 }
 
 async function resendVerificationLink(email: string): Promise<void> {
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    throw new ApiError("User not found.", 404);
+  const tempUser = await prisma.signupSession.findUnique({
+    where: { email },
+  });
+  if (!tempUser) {
+    throw new ApiError("Account not found or already verified.", 400);
   }
-  if (user.isVerified) {
-    throw new ApiError("Email is already verified.", 400);
-  }
+
   const emailVerificationToken = await generateToken(
-    { email: user.email },
+    { email: tempUser.email },
     "15m",
   );
-  await prisma.user.update({
-    where: { email: user.email },
-    data: {
-      verifyToken: emailVerificationToken,
-      verifyTokenExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
-    },
-  });
+
   // console.log(`Resent Verification Token: ${emailVerificationToken}`);
-  await sendVerificationEmail(user.email, emailVerificationToken);
+  await sendVerificationEmail(tempUser.email, emailVerificationToken);
 }
 
 async function loginUser(
   data: LoginFormData,
 ): Promise<{ user: PublicUser; access_token: string }> {
   const isEmail = data.usernameOrEmail.includes("@");
-  const user = await prisma.user.findUnique({
+
+  const userWithProfile = await prisma.user.findFirst({
     where: isEmail
       ? { email: data.usernameOrEmail }
-      : { username: data.usernameOrEmail },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      username: true,
-      password: true,
-    },
+      : { profile: { username: data.usernameOrEmail } },
+    include: { profile: true },
   });
-
-  if (!user) {
-    throw new ApiError("Invalid credentials.", 401);
+  if (!userWithProfile) {
+    throw new ApiError("Invalid credentials.", 400);
   }
-
-  if (!(await comparePassword(data.password, user.password))) {
-    throw new ApiError("Invalid credentials.", 401);
+  const isPasswordValid = await comparePassword(
+    data.password,
+    userWithProfile.password,
+  );
+  if (!isPasswordValid) {
+    throw new ApiError("Invalid credentials.", 400);
   }
-
-  const publicUser: PublicUser = {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    username: user.username,
-  };
-
   const access_token = await generateToken(
-    { userId: user.id, email: user.email },
+    { userId: userWithProfile.id, email: userWithProfile.email },
     "14d",
   );
-
+  if (!userWithProfile.profile) {
+    throw new ApiError("User profile not found.", 500);
+  }
+  const publicUser: PublicUser = {
+    id: userWithProfile.id,
+    firstName: userWithProfile.profile?.firstName,
+    lastName: userWithProfile.profile?.lastName,
+    email: userWithProfile.email,
+    username: userWithProfile.profile?.username,
+  };
   return { user: publicUser, access_token };
 }
 

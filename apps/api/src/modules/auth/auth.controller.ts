@@ -16,9 +16,9 @@ const registerUser = apiHandler(
 const verifyUserEmail = apiHandler(
   async (req: Request<{}, {}, { token: string }>, res: Response) => {
     const { token } = req.body;
-    const access_token = await authService.verifyUserEmail(token);
+    const { user, access_token } = await authService.verifyUserEmail(token);
     setCookie(res, "access_token", access_token);
-    successResponse(res, "Email verified successfully", null, 200);
+    successResponse(res, "Email verified successfully", user, 200);
   },
 );
 

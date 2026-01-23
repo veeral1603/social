@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+type ImageType {
+  url    String
+  fileId String
+}
+
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
@@ -42,6 +47,8 @@ model Profile {
   lastName  String?
   username  String  @unique
   bio       String?
+
+  avatar ImageType?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

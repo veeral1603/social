@@ -1,13 +1,26 @@
 import { Router } from "express";
 import authController from "./auth.controller";
 import { validate } from "../../middlewares/validate";
-import { loginSchema, registerSchema } from "@repo/shared-types";
+import {
+  loginSchema,
+  registerSchema,
+  verifyEmailSchema,
+  resendVerificationSchema,
+} from "@repo/shared-types";
 
 const router = Router();
 
 router.post("/register", validate(registerSchema), authController.registerUser);
 router.post("/login", validate(loginSchema), authController.loginUser);
-router.post("/verify-email", authController.verifyUserEmail);
-router.post("/resend-verification", authController.resendVerificationLink);
+router.post(
+  "/verify-email",
+  validate(verifyEmailSchema),
+  authController.verifyUserEmail,
+);
+router.post(
+  "/resend-verification",
+  validate(resendVerificationSchema),
+  authController.resendVerificationLink,
+);
 
 export default router;

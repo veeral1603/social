@@ -16,7 +16,7 @@ export const validate =
     }
 
     // overwrite body with validated & typed data
-    req.body = result.data;
+    req.validatedBody = result.data;
 
     return next();
   };

@@ -96,7 +96,7 @@ async function verifyUserEmail(
   });
 
   const access_token = await generateToken(
-    { userId, email: tempUser.email },
+    { id: userId, email: tempUser.email },
     "14d",
   );
 
@@ -150,7 +150,7 @@ async function loginUser(
     throw new ApiError("Invalid credentials.", 400);
   }
   const access_token = await generateToken(
-    { userId: userWithProfile.id, email: userWithProfile.email },
+    { id: userWithProfile.id, email: userWithProfile.email },
     "14d",
   );
   if (!userWithProfile.profile) {

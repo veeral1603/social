@@ -1,3 +1,4 @@
+import AuthModal from "@/src/components/auth/AuthModal";
 import React from "react";
 
 export default function RootLayout({
@@ -5,5 +6,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+  return (
+    <div className="h-screen w-full relative">
+      {children} <AuthModal />
+    </div>
+  );
 }

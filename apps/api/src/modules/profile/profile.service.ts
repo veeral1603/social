@@ -32,8 +32,7 @@ async function updateUserProfile(
   avatarFile: Express.Multer.File | null,
 ): Promise<Profile> {
   const updateData: UpdateProfileFormData = {
-    firstName: data.firstName || undefined,
-    lastName: data.lastName || undefined,
+    name: data.name ?? undefined,
     bio: data.bio || undefined,
   };
 

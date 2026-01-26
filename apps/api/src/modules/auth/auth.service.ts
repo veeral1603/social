@@ -29,8 +29,7 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
   const tempUser = await prisma.signupSession.create({
     data: {
       email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName || null,
+      name: data.name ?? null,
       username: data.username,
       password: hashedPassword,
       verifyToken: emailVerificationToken,
@@ -38,8 +37,7 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
     },
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      name: true,
       email: true,
       username: true,
     },
@@ -82,8 +80,7 @@ async function verifyUserEmail(
     await tx.profile.create({
       data: {
         userId: newUser.id,
-        firstName: tempUser.firstName,
-        lastName: tempUser.lastName ?? null,
+        name: tempUser.name ?? null,
         username: tempUser.username,
       },
     });
@@ -102,8 +99,7 @@ async function verifyUserEmail(
 
   const publicUser: PublicUser = {
     id: userId,
-    firstName: tempUser.firstName,
-    lastName: tempUser.lastName ?? null,
+    name: tempUser.name,
     email: tempUser.email,
     username: tempUser.username,
   };
@@ -158,8 +154,7 @@ async function loginUser(
   }
   const publicUser: PublicUser = {
     id: userWithProfile.id,
-    firstName: userWithProfile.profile?.firstName,
-    lastName: userWithProfile.profile?.lastName,
+    name: userWithProfile.profile.name ?? null,
     email: userWithProfile.email,
     username: userWithProfile.profile?.username,
   };

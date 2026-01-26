@@ -1,14 +1,11 @@
-import { jwt, z } from "zod";
+import { z } from "zod";
 
 export const registerSchema = z
   .object({
     email: z.email("Invalid email address."),
-    firstName: z
+    name: z
       .string()
-      .min(3, "First name must be at least 3 characters long."),
-    lastName: z
-      .string()
-      .min(3, "Last name must be at least 3 characters long.")
+      .min(3, "Full name must be at least 3 characters long.")
       .optional(),
     username: z
       .string()

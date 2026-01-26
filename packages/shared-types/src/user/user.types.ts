@@ -2,8 +2,7 @@ import { Profile } from "../profile/profile.types";
 
 export type PublicUser = {
   id: string;
-  firstName: string;
-  lastName?: string | null;
+  name?: string | null;
   username: string;
   email: string;
 };

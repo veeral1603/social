@@ -55,11 +55,11 @@ async function verifyUserEmail(
   });
 
   if (!tempUser) {
-    throw new ApiError("Invalid or expired token.", 400);
+    throw new ApiError("Invalid or expired OTP.", 400);
   }
 
   if (tempUser.verifyOtpExpiry < new Date()) {
-    throw new ApiError("Token has expired.", 400);
+    throw new ApiError("Invalid or expired OTP.", 400);
   }
 
   const { userId } = await prisma.$transaction(async (tx) => {

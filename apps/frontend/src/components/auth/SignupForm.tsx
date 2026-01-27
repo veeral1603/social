@@ -15,6 +15,10 @@ import { Input } from "@/src/components/ui/input";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthModal from "@/src/stores/authModalStore";
+import { toast } from "sonner";
+import React from "react";
+import { Spinner } from "../ui/spinner";
+import { signup } from "@/src/services/auth.service";
 
 export function SignupForm({
   className,
@@ -29,10 +33,23 @@ export function SignupForm({
       password: "",
     },
   });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { setPage } = useAuthModal();
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    console.log(data);
+    setIsSubmitting(true);
+    try {
+      const response = await signup(data);
+      if (!response.success) throw new Error(response.message);
+      toast.success("Verification code sent to your email.");
+      setPage("verify-email");
+    } catch (error) {
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -121,17 +138,9 @@ export function SignupForm({
 
           <Field className="mt-4">
             <Button type="submit" size="lg">
-              Create Account
+              {isSubmitting && <Spinner className="size-6" />}
+              {!isSubmitting && <p>Create Account</p>}
             </Button>
-            {/* <FieldDescription className="text-center">
-              Already have an account?{" "}
-              <span
-                className="underline cursor-pointer hover:text-secondary transition"
-                onClick={() => setPage("login")}
-              >
-                Log In
-              </span>
-            </FieldDescription> */}
           </Field>
 
           <Field>

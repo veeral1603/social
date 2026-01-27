@@ -1,7 +1,7 @@
 "use client";
 import { verifyEmailSchema } from "@repo/shared-types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { set, z } from "zod";
 import { cn } from "@/src/lib/utils";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -18,6 +18,11 @@ import {
 } from "@/src/components/ui/input-otp";
 import { Controller, useForm } from "react-hook-form";
 import ResendOTP from "./ResendOTP";
+import { toast } from "sonner";
+import { verifyEmail } from "@/src/services/auth.service";
+import React from "react";
+import useAuthModal from "@/src/stores/authModalStore";
+import { Spinner } from "../ui/spinner";
 
 export function VerifyForm({
   className,
@@ -29,9 +34,23 @@ export function VerifyForm({
     },
     resolver: zodResolver(verifyEmailSchema),
   });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const { close } = useAuthModal();
 
   const onSubmit = async (data: z.infer<typeof verifyEmailSchema>) => {
-    console.log(data);
+    setIsSubmitting(true);
+    try {
+      const response = await verifyEmail(data);
+      if (!response.success) throw new Error(response.message);
+      toast.success("Email verified successfully.");
+      close();
+    } catch (error) {
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -84,7 +103,11 @@ export function VerifyForm({
             )}
           />
           <Field className="mt-4">
-            <Button type="submit">Verify</Button>
+            <Button type="submit">
+              {" "}
+              {isSubmitting && <Spinner className="size-6" />}
+              {!isSubmitting && <p>Verify</p>}
+            </Button>
             <FieldDescription className="text-center">
               Didn&apos;t receive the code? <ResendOTP />
             </FieldDescription>

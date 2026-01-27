@@ -32,7 +32,7 @@ export default function AuthModal() {
           {page === "welcome" && <AuthWelcome />}
           {page === "login" && <Login />}
           {page === "signup" && <SignUp />}
-          {page === "verify" && <Verify />}
+          {page === "verify-email" && <Verify />}
         </div>
       </div>
     </div>

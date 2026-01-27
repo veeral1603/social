@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type AuthPage = "login" | "signup" | "welcome" | "verify";
+type AuthPage = "login" | "signup" | "welcome" | "verify-email";
 
 interface AuthModalStore {
   isOpen: boolean;
@@ -16,7 +16,7 @@ const useAuthModal = create<AuthModalStore>((set) => ({
   isOpen: true,
   page: "welcome",
   setPage: (page: AuthPage) => set({ page }),
-  close: () => set({ isOpen: false }),
+  close: () => set({ isOpen: false, page: "welcome" }),
   open: (page: AuthPage) => set({ isOpen: true, page }),
 }));
 

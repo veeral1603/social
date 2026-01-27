@@ -14,11 +14,16 @@ import { Input } from "@/src/components/ui/input";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthModal from "@/src/stores/authModalStore";
+import { Spinner } from "../ui/spinner";
+import React from "react";
+import { toast } from "sonner";
+import { login } from "@/src/services/auth.service";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -26,10 +31,22 @@ export function LoginForm({
       password: "",
     },
   });
-  const { setPage } = useAuthModal();
+  const { setPage, close } = useAuthModal();
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    console.log(data);
+    setIsSubmitting(true);
+    try {
+      const response = await login(data);
+      if (!response.success) throw new Error(response.message);
+      toast.success("Logged in successfully.");
+      close();
+    } catch (error) {
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,7 +97,8 @@ export function LoginForm({
 
           <Field className="mt-4">
             <Button type="submit" size="lg">
-              Log In
+              {isSubmitting && <Spinner className="size-6" />}
+              {!isSubmitting && <p>Log In</p>}
             </Button>
           </Field>
 

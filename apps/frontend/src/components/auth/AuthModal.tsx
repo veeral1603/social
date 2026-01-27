@@ -6,6 +6,7 @@ import useAuthModal from "@/src/stores/authModalStore";
 import AuthWelcome from "./AuthWelcome";
 import Login from "./Login";
 import SignUp from "./Signup";
+import Verify from "./Verify";
 
 export default function AuthModal() {
   const { isOpen, close, page } = useAuthModal();
@@ -31,6 +32,7 @@ export default function AuthModal() {
           {page === "welcome" && <AuthWelcome />}
           {page === "login" && <Login />}
           {page === "signup" && <SignUp />}
+          {page === "verify" && <Verify />}
         </div>
       </div>
     </div>

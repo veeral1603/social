@@ -20,7 +20,7 @@ router.post(
 router.post(
   "/resend-verification",
   validate(resendVerificationSchema),
-  authController.resendVerificationLink,
+  authController.resendVerificationOtp,
 );
 
 export default router;

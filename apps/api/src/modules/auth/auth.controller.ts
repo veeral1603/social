@@ -13,21 +13,21 @@ import { setCookie } from "../../lib/cookie";
 const registerUser = apiHandler(async (req: Request, res: Response) => {
   const data = req.validatedBody as RegisterFormData;
   const user = await authService.registerUser(data);
-  successResponse(res, "Verification link sent successfully", user, 201);
+  successResponse(res, "Verification OTP sent successfully", user, 201);
 });
 
 const verifyUserEmail = apiHandler(async (req: Request, res: Response) => {
   const data = req.validatedBody as VerifyEmailData;
-  const { user, access_token } = await authService.verifyUserEmail(data.token);
+  const { user, access_token } = await authService.verifyUserEmail(data.otp);
   setCookie(res, "access_token", access_token);
   successResponse(res, "Email verified successfully", user, 200);
 });
 
-export const resendVerificationLink = apiHandler(
+export const resendVerificationOtp = apiHandler(
   async (req: Request, res: Response) => {
     const data = req.validatedBody as ResendVerificationData;
-    await authService.resendVerificationLink(data.email);
-    successResponse(res, "Verification link resent successfully", null, 200);
+    await authService.resendVerificationOtp(data.email);
+    successResponse(res, "Verification OTP resent successfully", null, 200);
   },
 );
 
@@ -41,6 +41,6 @@ export const loginUser = apiHandler(async (req: Request, res: Response) => {
 export default {
   registerUser,
   verifyUserEmail,
-  resendVerificationLink,
+  resendVerificationOtp,
   loginUser,
 };

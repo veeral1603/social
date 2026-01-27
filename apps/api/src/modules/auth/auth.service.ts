@@ -6,8 +6,9 @@ import type {
 import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
 import { comparePassword, hashPassword } from "../../lib/password";
-import { generateToken, verifyToken } from "../../lib/jwt";
+import { generateToken } from "../../lib/jwt";
 import { sendVerificationEmail } from "../../lib/email";
+import generateOtp from "../../utils/generateOtp";
 
 async function registerUser(data: RegisterFormData): Promise<PublicUser> {
   const existingUser = await prisma.user.findUnique({
@@ -22,18 +23,16 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
   if (existingUsername) throw new ApiError("Username is already taken.", 400);
 
   const hashedPassword = await hashPassword(data.password);
-  const emailVerificationToken = await generateToken(
-    { email: data.email },
-    "15m",
-  );
+  const emailVerificationOtp = generateOtp(6);
+
   const tempUser = await prisma.signupSession.create({
     data: {
       email: data.email,
       name: data.name ?? null,
       username: data.username,
       password: hashedPassword,
-      verifyToken: emailVerificationToken,
-      verifyTokenExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+      verifyOtp: emailVerificationOtp,
+      verifyOtpExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
     },
     select: {
       id: true,
@@ -43,28 +42,23 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
     },
   });
 
-  await sendVerificationEmail(tempUser.email, emailVerificationToken);
+  await sendVerificationEmail(tempUser.email, emailVerificationOtp);
 
   return tempUser as PublicUser;
 }
 
 async function verifyUserEmail(
-  token: string,
+  otp: string,
 ): Promise<{ user: PublicUser; access_token: string }> {
-  const payload = await verifyToken<{ email: string }>(token);
-  if (!payload || !payload.email) {
-    throw new ApiError("Token payload is invalid.", 400);
-  }
-
   const tempUser = await prisma.signupSession.findFirst({
-    where: { email: payload.email, verifyToken: token },
+    where: { verifyOtp: otp },
   });
 
   if (!tempUser) {
     throw new ApiError("Invalid or expired token.", 400);
   }
 
-  if (tempUser.verifyTokenExpiry < new Date()) {
+  if (tempUser.verifyOtpExpiry < new Date()) {
     throw new ApiError("Token has expired.", 400);
   }
 
@@ -107,7 +101,7 @@ async function verifyUserEmail(
   return { user: publicUser, access_token };
 }
 
-async function resendVerificationLink(email: string): Promise<void> {
+async function resendVerificationOtp(email: string): Promise<void> {
   const tempUser = await prisma.signupSession.findUnique({
     where: { email },
   });
@@ -115,13 +109,10 @@ async function resendVerificationLink(email: string): Promise<void> {
     throw new ApiError("Account not found or already verified.", 400);
   }
 
-  const emailVerificationToken = await generateToken(
-    { email: tempUser.email },
-    "15m",
-  );
+  const emailVerificationOtp = generateOtp(6);
 
-  // console.log(`Resent Verification Token: ${emailVerificationToken}`);
-  await sendVerificationEmail(tempUser.email, emailVerificationToken);
+  // console.log(`Resent Verification OTP: ${emailVerificationOtp}`);
+  await sendVerificationEmail(tempUser.email, emailVerificationOtp);
 }
 
 async function loginUser(
@@ -164,6 +155,6 @@ async function loginUser(
 export default {
   registerUser,
   verifyUserEmail,
-  resendVerificationLink,
+  resendVerificationOtp,
   loginUser,
 };

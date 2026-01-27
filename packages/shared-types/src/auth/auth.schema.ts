@@ -20,7 +20,7 @@ export const loginSchema = z.object({
 });
 
 export const verifyEmailSchema = z.object({
-  token: z.jwt("Invalid or expired token."),
+  otp: z.string().length(6, "OTP must be 6 characters long."),
 });
 
 export const resendVerificationSchema = z.object({

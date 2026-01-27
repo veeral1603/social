@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import useAuthModal from "@/src/stores/authModalStore";
 import Image from "next/image";
 import React from "react";

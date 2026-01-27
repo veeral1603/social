@@ -118,7 +118,9 @@ export function SignupForm({
           />
 
           <Field className="mt-4">
-            <Button type="submit">Create Account</Button>
+            <Button type="submit" size="lg">
+              Create Account
+            </Button>
             {/* <FieldDescription className="text-center">
               Already have an account?{" "}
               <span

@@ -84,10 +84,11 @@ export function SignupForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="name">Username</FieldLabel>
+
                 <Input
                   id={field.name}
                   type="text"
-                  placeholder="@username"
+                  placeholder="Create a username"
                   {...field}
                   aria-invalid={fieldState.invalid}
                 />
@@ -109,6 +110,7 @@ export function SignupForm({
                   id={field.name}
                   type="password"
                   aria-invalid={fieldState.invalid}
+                  placeholder="Enter your password"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

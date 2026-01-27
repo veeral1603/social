@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type AuthPage = "login" | "signup" | "welcome";
+type AuthPage = "login" | "signup" | "welcome" | "verify";
 
 interface AuthModalStore {
   isOpen: boolean;

@@ -47,7 +47,7 @@ export function LoginForm({
                 <Input
                   id={field.name}
                   type="text"
-                  placeholder="@username"
+                  placeholder="Enter your username or email"
                   {...field}
                   aria-invalid={fieldState.invalid}
                 />
@@ -69,6 +69,7 @@ export function LoginForm({
                   id={field.name}
                   type="password"
                   aria-invalid={fieldState.invalid}
+                  placeholder="Enter your password"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

@@ -40,8 +40,7 @@ export function SignupForm({
     setIsSubmitting(true);
     try {
       const response = await signup(data);
-      if (!response.success) throw new Error(response.message);
-      toast.success("Verification code sent to your email.");
+      toast.success(response.message || "Account created successfully!");
       setPage("verify-email");
     } catch (error) {
       toast.error(

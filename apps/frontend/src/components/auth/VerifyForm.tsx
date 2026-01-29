@@ -41,8 +41,7 @@ export function VerifyForm({
     setIsSubmitting(true);
     try {
       const response = await verifyEmail(data);
-      if (!response.success) throw new Error(response.message);
-      toast.success("Email verified successfully.");
+      toast.success(response.message || "Email verified successfully.");
       close();
     } catch (error) {
       toast.error(

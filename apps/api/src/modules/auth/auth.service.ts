@@ -6,11 +6,13 @@ import type {
 import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
 import { comparePassword, hashPassword } from "../../lib/password";
-import { generateToken } from "../../lib/jwt";
+import { generateToken, verifyToken } from "../../lib/jwt";
 import { sendVerificationEmail } from "../../lib/email";
 import generateOtp from "../../utils/generateOtp";
 
-async function registerUser(data: RegisterFormData): Promise<PublicUser> {
+async function registerUser(
+  data: RegisterFormData,
+): Promise<{ user: PublicUser; temp_token: string }> {
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
   });
@@ -42,9 +44,17 @@ async function registerUser(data: RegisterFormData): Promise<PublicUser> {
     },
   });
 
+  const temp_token = await generateToken(
+    {
+      id: tempUser.id,
+      email: tempUser.email,
+    },
+    "15m",
+  );
+
   await sendVerificationEmail(tempUser.email, emailVerificationOtp);
 
-  return tempUser as PublicUser;
+  return { user: tempUser as PublicUser, temp_token };
 }
 
 async function verifyUserEmail(
@@ -101,7 +111,16 @@ async function verifyUserEmail(
   return { user: publicUser, access_token };
 }
 
-async function resendVerificationOtp(email: string): Promise<void> {
+async function resendVerificationOtp(
+  temp_token: string | undefined,
+): Promise<void> {
+  const payload = await verifyToken<{ id: string; email: string }>(
+    temp_token || "",
+  );
+  if (!payload || !payload.email || !payload.id || !temp_token) {
+    throw new ApiError("Invalid or expired token.", 400);
+  }
+  const email = payload.email;
   const tempUser = await prisma.signupSession.findUnique({
     where: { email },
   });
@@ -110,6 +129,14 @@ async function resendVerificationOtp(email: string): Promise<void> {
   }
 
   const emailVerificationOtp = generateOtp(6);
+
+  await prisma.signupSession.update({
+    where: { email },
+    data: {
+      verifyOtp: emailVerificationOtp,
+      verifyOtpExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+    },
+  });
 
   // console.log(`Resent Verification OTP: ${emailVerificationOtp}`);
   await sendVerificationEmail(tempUser.email, emailVerificationOtp);

@@ -5,26 +5,44 @@ import {
   VerifyEmailData,
 } from "@repo/shared-types";
 import axiosInstance from "../lib/axios";
+import { AxiosError } from "axios";
 
 export const signup = async (data: RegisterFormData) => {
-  const response = await axiosInstance.post("/auth/register", data);
-  return response.data;
+  try {
+    const response = await axiosInstance.post("/auth/register", data);
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data.message || "Logout failed");
+  }
 };
 
 export const login = async (data: LoginFormData) => {
-  const response = await axiosInstance.post("/auth/login", data);
-  return response.data;
+  try {
+    const response = await axiosInstance.post("/auth/login", data);
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data.message || "Login failed");
+  }
 };
 
 export const verifyEmail = async (data: VerifyEmailData) => {
-  const response = await axiosInstance.post("/auth/verify-email", data);
-  return response.data;
+  try {
+    const response = await axiosInstance.post("/auth/verify-email", data);
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data.message || "Verification failed");
+  }
 };
 
-export const resendVerificationOtp = async (data: ResendVerificationData) => {
-  const response = await axiosInstance.post(
-    "/auth/resend-verification-otp",
-    data,
-  );
-  return response.data;
+export const resendVerificationOtp = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/resend-verification-otp");
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data.message || "Resend request failed");
+  }
 };

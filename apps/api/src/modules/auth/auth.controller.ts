@@ -5,28 +5,29 @@ import { successResponse } from "../../utils/apiResponses";
 import type {
   LoginFormData,
   RegisterFormData,
-  ResendVerificationData,
   VerifyEmailData,
 } from "@repo/shared-types";
-import { setCookie } from "../../lib/cookie";
+import { clearCookie, setCookie } from "../../lib/cookie";
 
 const registerUser = apiHandler(async (req: Request, res: Response) => {
   const data = req.validatedBody as RegisterFormData;
-  const user = await authService.registerUser(data);
+  const { user, temp_token } = await authService.registerUser(data);
+  setCookie(res, "temp_token", temp_token);
   successResponse(res, "Verification OTP sent successfully", user, 201);
 });
 
 const verifyUserEmail = apiHandler(async (req: Request, res: Response) => {
   const data = req.validatedBody as VerifyEmailData;
   const { user, access_token } = await authService.verifyUserEmail(data.otp);
+  clearCookie(res, "temp_token");
   setCookie(res, "access_token", access_token);
   successResponse(res, "Email verified successfully", user, 200);
 });
 
 export const resendVerificationOtp = apiHandler(
   async (req: Request, res: Response) => {
-    const data = req.validatedBody as ResendVerificationData;
-    await authService.resendVerificationOtp(data.email);
+    const temp_token = req.cookies["temp_token"] as string | undefined;
+    await authService.resendVerificationOtp(temp_token);
     successResponse(res, "Verification OTP resent successfully", null, 200);
   },
 );

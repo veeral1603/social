@@ -37,8 +37,8 @@ export function LoginForm({
     setIsSubmitting(true);
     try {
       const response = await login(data);
-      if (!response.success) throw new Error(response.message);
-      toast.success("Logged in successfully.");
+
+      toast.success(response.message || "Logged in successfully.");
       close();
     } catch (error) {
       toast.error(

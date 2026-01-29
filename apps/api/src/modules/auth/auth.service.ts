@@ -1,7 +1,8 @@
 import type {
   LoginFormData,
-  RegisterFormData,
   PublicUser,
+  RegisterFormData,
+  TempUser,
 } from "@repo/shared-types";
 import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
@@ -12,7 +13,7 @@ import generateOtp from "../../utils/generateOtp";
 
 async function registerUser(
   data: RegisterFormData,
-): Promise<{ user: PublicUser; temp_token: string }> {
+): Promise<{ user: TempUser; temp_token: string }> {
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
   });
@@ -62,12 +63,12 @@ async function registerUser(
 
   await sendVerificationEmail(tempUser.email, emailVerificationOtp);
 
-  return { user: tempUser as PublicUser, temp_token };
+  return { user: tempUser as TempUser, temp_token };
 }
 
 async function verifyUserEmail(
   otp: string,
-): Promise<{ user: PublicUser; access_token: string }> {
+): Promise<{ user: TempUser; access_token: string }> {
   const tempUser = await prisma.signupSession.findFirst({
     where: { verifyOtp: otp },
   });
@@ -109,14 +110,14 @@ async function verifyUserEmail(
     "14d",
   );
 
-  const publicUser: PublicUser = {
+  const TempUser: TempUser = {
     id: userId,
     name: tempUser.name,
     email: tempUser.email,
     username: tempUser.username,
   };
 
-  return { user: publicUser, access_token };
+  return { user: TempUser, access_token };
 }
 
 async function resendVerificationOtp(
@@ -152,7 +153,7 @@ async function resendVerificationOtp(
 
 async function loginUser(
   data: LoginFormData,
-): Promise<{ user: PublicUser; access_token: string }> {
+): Promise<{ user: TempUser; access_token: string }> {
   const isEmail = data.usernameOrEmail.includes("@");
 
   const userWithProfile = await prisma.user.findFirst({
@@ -178,13 +179,24 @@ async function loginUser(
   if (!userWithProfile.profile) {
     throw new ApiError("User profile not found.", 500);
   }
-  const publicUser: PublicUser = {
+  const TempUser: TempUser = {
     id: userWithProfile.id,
     name: userWithProfile.profile.name ?? null,
     email: userWithProfile.email,
     username: userWithProfile.profile?.username,
   };
-  return { user: publicUser, access_token };
+  return { user: TempUser, access_token };
+}
+
+async function getCurrentUser(userId: string): Promise<PublicUser> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, isVerified: true },
+  });
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+  return user;
 }
 
 export default {
@@ -192,4 +204,5 @@ export default {
   verifyUserEmail,
   resendVerificationOtp,
   loginUser,
+  getCurrentUser,
 };

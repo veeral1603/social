@@ -7,10 +7,17 @@ import AuthWelcome from "./AuthWelcome";
 import Login from "./Login";
 import SignUp from "./Signup";
 import Verify from "./Verify";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
 
 export default function AuthModal() {
   const { isOpen, close, page } = useAuthModal();
+  const { auth } = useAuthContext();
 
+  React.useEffect(() => {
+    if (auth.user) {
+      close();
+    }
+  }, [auth.user, close]);
   if (!isOpen) return null;
 
   return (
@@ -27,7 +34,7 @@ export default function AuthModal() {
           </Button>
         )}
         <div
-          className={`max-w-md mx-auto p-8 w-full h-full ${page === "welcome" ? "items-center" : ""} flex md:items-center justify-center `}
+          className={`max-w-md mx-auto p-8 w-full h-full ${page === "welcome" ? "items-center" : ""} flex sm:items-center justify-center `}
         >
           {page === "welcome" && <AuthWelcome />}
           {page === "login" && <Login />}

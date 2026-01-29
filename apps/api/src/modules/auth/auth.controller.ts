@@ -39,9 +39,24 @@ export const loginUser = apiHandler(async (req: Request, res: Response) => {
   successResponse(res, "Login successful", user, 200);
 });
 
+export const getCurrentUser = apiHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id as string;
+    const user = await authService.getCurrentUser(userId);
+    successResponse(res, "User fetched successfully", user, 200);
+  },
+);
+
+export const logoutUser = apiHandler((_req: Request, res: Response) => {
+  clearCookie(res, "access_token");
+  successResponse(res, "Logout successful", null, 200);
+});
+
 export default {
   registerUser,
   verifyUserEmail,
   resendVerificationOtp,
   loginUser,
+  getCurrentUser,
+  logoutUser,
 };

@@ -1,7 +1,6 @@
 import {
   LoginFormData,
   RegisterFormData,
-  ResendVerificationData,
   VerifyEmailData,
 } from "@repo/shared-types";
 import axiosInstance from "../lib/axios";
@@ -44,5 +43,17 @@ export const resendVerificationOtp = async () => {
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
     throw new Error(error.response?.data.message || "Resend request failed");
+  }
+};
+
+export const getCurrentUser = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/me");
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(
+      error.response?.data.message || "Fetch current user failed",
+    );
   }
 };

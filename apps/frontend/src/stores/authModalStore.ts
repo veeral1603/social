@@ -13,7 +13,7 @@ interface AuthModalStore {
 }
 
 const useAuthModal = create<AuthModalStore>((set) => ({
-  isOpen: true,
+  isOpen: false,
   page: "welcome",
   setPage: (page: AuthPage) => set({ page }),
   close: () => set({ isOpen: false, page: "welcome" }),

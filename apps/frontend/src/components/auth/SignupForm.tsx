@@ -77,6 +77,7 @@ export function SignupForm({
 
     const checkAvailability = async () => {
       try {
+        setCheckingUsername(true);
         const response = await checkUsenameAvailability(username);
 
         if (!isCancelled) {

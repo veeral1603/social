@@ -27,8 +27,16 @@ async function registerUser(
   const hashedPassword = await hashPassword(data.password);
   const emailVerificationOtp = generateOtp(6);
 
-  const tempUser = await prisma.signupSession.create({
-    data: {
+  const tempUser = await prisma.signupSession.upsert({
+    where: { email: data.email },
+    update: {
+      name: data.name ?? null,
+      username: data.username,
+      password: hashedPassword,
+      verifyOtp: emailVerificationOtp,
+      verifyOtpExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+    },
+    create: {
       email: data.email,
       name: data.name ?? null,
       username: data.username,

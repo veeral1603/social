@@ -1,4 +1,5 @@
 import AuthModal from "@/src/components/auth/AuthModal";
+import FooterAuthCTA from "@/src/components/layout/FooterAuthCTA";
 import LeftSidebar from "@/src/components/layout/left-sidebar/LeftSidebar";
 import LoadingScreen from "@/src/components/layout/LoadingScreen";
 import RightSidebar from "@/src/components/layout/right-sidebar/RightSidebar";
@@ -22,6 +23,8 @@ export default function RootLayout({
         </main>
 
         <RightSidebar />
+
+        <FooterAuthCTA />
       </div>
     </div>
   );

@@ -23,6 +23,7 @@ import { verifyEmail } from "@/src/services/auth.service";
 import React from "react";
 import useAuthModal from "@/src/stores/authModalStore";
 import { Spinner } from "../ui/spinner";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
 
 export function VerifyForm({
   className,
@@ -36,12 +37,14 @@ export function VerifyForm({
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { close } = useAuthModal();
+  const { refreshAuth } = useAuthContext();
 
   const onSubmit = async (data: z.infer<typeof verifyEmailSchema>) => {
     setIsSubmitting(true);
     try {
       const response = await verifyEmail(data);
       toast.success(response.message || "Email verified successfully.");
+      refreshAuth();
       close();
     } catch (error) {
       toast.error(

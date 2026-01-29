@@ -18,6 +18,7 @@ import { Spinner } from "../ui/spinner";
 import React from "react";
 import { toast } from "sonner";
 import { login } from "@/src/services/auth.service";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
 
 export function LoginForm({
   className,
@@ -32,6 +33,7 @@ export function LoginForm({
     },
   });
   const { setPage, close } = useAuthModal();
+  const { refreshAuth } = useAuthContext();
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
@@ -39,6 +41,7 @@ export function LoginForm({
       const response = await login(data);
 
       toast.success(response.message || "Logged in successfully.");
+      refreshAuth();
       close();
     } catch (error) {
       toast.error(

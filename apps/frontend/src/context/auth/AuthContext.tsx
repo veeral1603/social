@@ -4,7 +4,7 @@ import { AuthState } from "./authContext.types";
 
 type AuthContextValue = {
   auth: AuthState;
-  refreshAuth: () => Promise<void>;
+  refreshAuth: (delay?: number) => Promise<void>;
   clearAuth: () => void;
 };
 

@@ -14,7 +14,11 @@ export default function AuthProvider({
     user: null,
   });
 
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = async (delay: number = 3000) => {
+    setAuth({ status: "loading", user: null });
+    if (delay) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
     try {
       const response = await getCurrentUser();
       setAuth({ status: "authenticated", user: response.data });

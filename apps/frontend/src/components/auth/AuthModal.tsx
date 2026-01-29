@@ -13,15 +13,10 @@ export default function AuthModal() {
   const { isOpen, close, page } = useAuthModal();
   const { auth } = useAuthContext();
 
-  React.useEffect(() => {
-    if (auth.user) {
-      close();
-    }
-  }, [auth.user, close]);
-  if (!isOpen) return null;
+  if (!isOpen || (auth.status === "authenticated" && auth.user)) return null;
 
   return (
-    <div className="absolute inset-0 bg-background h-screen">
+    <div className="absolute inset-0 z-100 bg-background h-screen">
       <div className="h-full w-full relative">
         {page === "welcome" && (
           <Button

@@ -22,7 +22,3 @@ export const loginSchema = z.object({
 export const verifyEmailSchema = z.object({
   otp: z.string().length(6, "OTP must be 6 characters long."),
 });
-
-export const resendVerificationSchema = z.object({
-  email: z.email("Invalid email address."),
-});

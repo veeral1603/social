@@ -1,12 +1,6 @@
 import { z } from "zod";
-import {
-  registerSchema,
-  loginSchema,
-  verifyEmailSchema,
-  resendVerificationSchema,
-} from "./auth.schema";
+import { registerSchema, loginSchema, verifyEmailSchema } from "./auth.schema";
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type VerifyEmailData = z.infer<typeof verifyEmailSchema>;
-export type ResendVerificationData = z.infer<typeof resendVerificationSchema>;

@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import React from "react";
 import { Spinner } from "../ui/spinner";
 import { signup } from "@/src/services/auth.service";
+import { CircleCheck, XCircle } from "lucide-react";
+import { checkUsenameAvailability } from "@/src/services/profile.service";
 
 export function SignupForm({
   className,
@@ -26,6 +28,8 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       name: "",
       email: "",
@@ -34,6 +38,11 @@ export function SignupForm({
     },
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = React.useState<
+    boolean | null
+  >(null);
+  const [checkingUsername, setCheckingUsername] = React.useState(false);
+
   const { setPage } = useAuthModal();
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
@@ -50,6 +59,50 @@ export function SignupForm({
       setIsSubmitting(false);
     }
   };
+
+  const username = form.watch("username");
+  const usernameError = form.formState.errors.username;
+  const isUsernameValid = !usernameError;
+
+  React.useEffect(() => {
+    setIsUsernameAvailable(null);
+
+    if (!username || username.length < 3 || !isUsernameValid) {
+      setIsUsernameAvailable(null);
+      setCheckingUsername(false);
+      return;
+    }
+
+    let isCancelled = false;
+
+    const checkAvailability = async () => {
+      try {
+        const response = await checkUsenameAvailability(username);
+
+        if (!isCancelled) {
+          setIsUsernameAvailable(response.data.isAvailable);
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          toast.error(
+            (error as Error).message ||
+              "Failed to check username availability.",
+          );
+        }
+      } finally {
+        if (!isCancelled) {
+          setCheckingUsername(false);
+        }
+      }
+    };
+
+    const debounceId = setTimeout(checkAvailability, 800);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(debounceId);
+    };
+  }, [username, isUsernameValid]);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -99,7 +152,7 @@ export function SignupForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="name">Username</FieldLabel>
+                <FieldLabel htmlFor="username">Username</FieldLabel>
 
                 <Input
                   id={field.name}
@@ -110,6 +163,28 @@ export function SignupForm({
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
+                )}
+                {checkingUsername && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Spinner className="size-4" />
+                    <p>Checking Availability</p>
+                  </div>
+                )}
+                {!checkingUsername && isUsernameAvailable === false && (
+                  <FieldError className="text-xs">
+                    <div className="flex items-center gap-2">
+                      <XCircle size={16} />
+                      <p>Username Unavailable!</p>
+                    </div>
+                  </FieldError>
+                )}
+                {!checkingUsername && isUsernameAvailable === true && (
+                  <FieldError className="text-xs">
+                    <div className="flex items-center gap-2 text-green-600">
+                      <CircleCheck size={16} />
+                      <p>Username Available!</p>
+                    </div>
+                  </FieldError>
                 )}
               </Field>
             )}
@@ -136,7 +211,16 @@ export function SignupForm({
           />
 
           <Field className="mt-4">
-            <Button type="submit" size="lg">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={
+                isSubmitting ||
+                checkingUsername ||
+                isUsernameAvailable === false ||
+                !isUsernameValid
+              }
+            >
               {isSubmitting && <Spinner className="size-6" />}
               {!isSubmitting && <p>Create Account</p>}
             </Button>

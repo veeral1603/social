@@ -3,6 +3,7 @@ import type {
   PublicUser,
   RegisterFormData,
   TempUser,
+  UserWithProfile,
 } from "@repo/shared-types";
 import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
@@ -188,10 +189,13 @@ async function loginUser(
   return { user: TempUser, access_token };
 }
 
-async function getCurrentUser(userId: string): Promise<PublicUser> {
+async function getCurrentUser(
+  userId: string,
+  withProfile: boolean = false,
+): Promise<PublicUser | UserWithProfile> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, isVerified: true },
+    select: { id: true, email: true, isVerified: true, profile: withProfile },
   });
   if (!user) {
     throw new ApiError("User not found", 404);

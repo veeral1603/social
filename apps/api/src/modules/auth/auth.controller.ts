@@ -41,8 +41,9 @@ export const loginUser = apiHandler(async (req: Request, res: Response) => {
 
 export const getCurrentUser = apiHandler(
   async (req: Request, res: Response) => {
+    const withProfile = req.query["profile"] === "true";
     const userId = req.user?.id as string;
-    const user = await authService.getCurrentUser(userId);
+    const user = await authService.getCurrentUser(userId, withProfile);
     successResponse(res, "User fetched successfully", user, 200);
   },
 );

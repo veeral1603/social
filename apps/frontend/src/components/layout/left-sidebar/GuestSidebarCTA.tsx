@@ -21,7 +21,7 @@ export default function GuestSidebarCTA() {
         <h3 className="font-bold text-2xl font-montserrat leading-7">
           Join the social community!
         </h3>
-        <div className="flex  items-center gap-3 mt-4 flex-wrap">
+        <div className="flex  items-center gap-3 mt-4 ">
           <Button variant="default" size="sm" onClick={() => open("signup")}>
             Create Account
           </Button>

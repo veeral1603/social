@@ -15,7 +15,7 @@ export default function RootLayout({
       <AuthModal />
       <LoadingScreen />
 
-      <div className="w-full md:max-w-3xl lg:max-w-4xl xl:max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[5rem_1fr_6rem]  lg:grid-cols-[4rem_1fr_18rem] xl:grid-cols-[16rem_1fr_20rem]">
+      <div className="w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[5rem_1fr_6rem]  lg:grid-cols-[5rem_1fr_20rem] xl:grid-cols-[15rem_1fr_20rem]">
         <LeftSidebar />
 
         <main className="min-h-screen border-x border-border w-full">

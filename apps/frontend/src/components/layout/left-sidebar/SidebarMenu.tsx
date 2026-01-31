@@ -10,11 +10,10 @@ import {
 } from "lucide-react";
 import React from "react";
 import type { NavLink } from "@/src/types";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "../../ui/button";
+import SidebarMenuItem from "./SidebarMenuItem";
 
-const navLinks: NavLink[] = [
+const allNavLinks: NavLink[] = [
   { label: "Home", href: "/", icon: Home },
   { label: "Explore", href: "/explore", icon: Search },
   { label: "Notifications", href: "/notifications", icon: Bell },
@@ -24,27 +23,26 @@ const navLinks: NavLink[] = [
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
-export default function SidebarMenu() {
-  const path = usePathname();
+export default function SidebarMenu({
+  links,
+  type = "desktop",
+}: {
+  links?: string[];
+  type?: "mobile" | "desktop";
+}) {
+  let navLinks: NavLink[] = [];
+  if (links) {
+    links.forEach((link) => {
+      navLinks.push(allNavLinks.find((navLink) => navLink.label === link)!);
+    });
+  } else {
+    navLinks = allNavLinks;
+  }
   return (
     <div className="flex flex-col ">
-      {navLinks.map((link) => {
-        const Icon = link.icon;
-        const isActive = path === link.href;
-        return (
-          <Link href={link.href} className="block" key={link.href}>
-            <div className="flex items-center justify-center xl:justify-start gap-2 p-5 xl:py-3 xl:px-4  rounded-[12px] hover:bg-muted duration-300 ">
-              <Icon size={24} strokeWidth={isActive ? 3 : 2} />
-              <p
-                className={`hidden xl:block text-lg ${isActive ? "font-bold" : "font-normal"}`}
-              >
-                {link.label}
-              </p>
-            </div>
-          </Link>
-        );
-      })}
-
+      {navLinks.map((link, index) => (
+        <SidebarMenuItem link={link} key={index} type={type} />
+      ))}
       <Button className="mt-4 hidden xl:flex w-max ml-4" size="lg">
         <PencilLine size={20} /> <p>New Post</p>
       </Button>

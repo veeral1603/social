@@ -3,11 +3,13 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "../../ui/button";
 import useAuthModal from "@/src/stores/authModalStore";
+import { useMobileSidebarStore } from "@/src/stores/mobileSidebarStore";
 
 export default function GuestSidebarCTA() {
   const { open } = useAuthModal();
+  const { closeMenu } = useMobileSidebarStore();
   return (
-    <div className="hidden xl:block">
+    <div className="md:hidden xl:block">
       <div className="relative flex items-center justify-center w-15 h-10">
         <Image
           src="/images/logo.png"
@@ -22,14 +24,23 @@ export default function GuestSidebarCTA() {
           Join the social community!
         </h3>
         <div className="flex  items-center gap-3 mt-4 ">
-          <Button variant="default" size="sm" onClick={() => open("signup")}>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => {
+              open("signup");
+              closeMenu();
+            }}
+          >
             Create Account
           </Button>
           <Button
             variant="secondary"
             size="sm"
-            className="flex-1"
-            onClick={() => open("login")}
+            onClick={() => {
+              open("login");
+              closeMenu();
+            }}
           >
             Log In
           </Button>

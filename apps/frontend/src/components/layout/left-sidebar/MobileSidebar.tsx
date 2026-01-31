@@ -2,11 +2,8 @@
 
 import { useAuthContext } from "@/src/hooks/useAuthContext";
 import { motion, AnimatePresence } from "motion/react";
-import AuthenticatedSidebar from "./AuthenticatedSidebar";
-import GuestSidebarCTA from "./GuestSidebarCTA";
 import { useMobileSidebarStore } from "@/src/stores/mobileSidebarStore";
 import { useEffect } from "react";
-import SidebarMenu from "./SidebarMenu";
 import GuestMobileSidebar from "./GuestMobileSidebar";
 import AuthenticatedMobileSidebar from "./AuthenticatedMobileSidebar";
 
@@ -38,7 +35,7 @@ export default function MobileSidebar() {
 
           {/* Sidebar */}
           <motion.aside
-            className="fixed inset-y-0 left-0 z-50 w-80 bg-background border-r border-border md:hidden flex flex-col"
+            className="fixed inset-y-0 left-0 z-50 w-70 bg-background border-r border-border md:hidden flex flex-col"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}

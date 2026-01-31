@@ -21,8 +21,7 @@ export default function RootLayout({
       <div className="w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[5rem_1fr_6rem]  lg:grid-cols-[5rem_1fr_20rem] xl:grid-cols-[15rem_1fr_20rem]">
         <LeftSidebar />
 
-        <div className="min-h-screen border-x border-border w-full relative">
-          <PageHeader />
+        <div className="min-h-screen md:border-x md:border-border w-full relative">
           <main>{children}</main>
         </div>
 

@@ -3,7 +3,7 @@ import FooterAuthCTA from "@/src/components/layout/FooterAuthCTA";
 import LeftSidebar from "@/src/components/layout/left-sidebar/LeftSidebar";
 import MobileSidebar from "@/src/components/layout/left-sidebar/MobileSidebar";
 import LoadingScreen from "@/src/components/layout/LoadingScreen";
-import PageHeader from "@/src/components/layout/PageHeader";
+import MobileQuickAccess from "@/src/components/layout/quick-access/MobileQuickAccess";
 import RightSidebar from "@/src/components/layout/right-sidebar/RightSidebar";
 import React from "react";
 
@@ -23,6 +23,7 @@ export default function RootLayout({
 
         <div className="min-h-screen md:border-x md:border-border w-full relative">
           <main>{children}</main>
+          <MobileQuickAccess />
         </div>
 
         <RightSidebar />

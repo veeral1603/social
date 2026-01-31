@@ -41,7 +41,7 @@ export default function SidebarMenuItem({
       key={link.href}
       onClick={closeMenu}
     >
-      <div className="flex items-center justify-center xl:justify-start gap-2 p-5 xl:py-3 xl:px-4  rounded-[12px] hover:bg-muted duration-300 ">
+      <div className="flex items-center justify-center xl:justify-start gap-2 p-5 xl:py-3 xl:px-4  rounded-[8px] hover:bg-muted duration-300 ">
         <Icon size={24} strokeWidth={isActive ? 3 : 2} />
         <p
           className={`hidden xl:block text-lg ${isActive ? "font-bold" : "font-normal"}`}

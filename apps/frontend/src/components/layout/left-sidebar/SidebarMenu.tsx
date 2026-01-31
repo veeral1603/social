@@ -43,6 +43,7 @@ export default function SidebarMenu({
       {navLinks.map((link, index) => (
         <SidebarMenuItem link={link} key={index} type={type} />
       ))}
+
       <Button className="mt-4 hidden xl:flex w-max ml-4" size="lg">
         <PencilLine size={20} /> <p>New Post</p>
       </Button>

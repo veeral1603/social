@@ -47,6 +47,7 @@ model Profile {
   bio      String?
 
   avatar ImageType?
+  banner ImageType?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

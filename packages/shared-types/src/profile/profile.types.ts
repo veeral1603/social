@@ -1,14 +1,17 @@
 import { updateProfileSchema, updateUsernameSchema } from "./profile.schema";
 import z from "zod";
 
+type ImageType = {
+  url: string;
+  fileId: string;
+};
+
 export type Profile = {
   name?: string | null;
   username: string;
   bio?: string | null;
-  avatar?: {
-    url: string;
-    fileId: string;
-  } | null;
+  avatar?: ImageType | null;
+  banner?: ImageType | null;
 };
 
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;

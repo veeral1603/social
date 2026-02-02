@@ -30,20 +30,22 @@ async function updateUserProfile(
   userId: string,
   data: UpdateProfileFormData,
   avatarFile: Express.Multer.File | null,
+  bannerFile: Express.Multer.File | null,
 ): Promise<Profile> {
   const updateData: UpdateProfileFormData = {
     name: data.name ?? undefined,
     bio: data.bio || undefined,
   };
 
+  const userProfile = await getProfileByUserId(userId);
+  if (!userProfile) {
+    throw new ApiError("Profile not found", 404);
+  }
+
   let avatarObj: { url: string; fileId: string } | undefined = undefined;
   if (avatarFile) {
     const fileName = `${userId}_avatar_${Date.now()}`;
     try {
-      const userProfile = await getProfileByUserId(userId);
-      if (!userProfile) {
-        throw new ApiError("Profile not found", 404);
-      }
       if (userProfile.avatar) {
         await deleteImage(userProfile.avatar.fileId);
       }
@@ -60,6 +62,29 @@ async function updateUserProfile(
       updateData.avatar = avatarObj;
     } catch {
       throw new ApiError("Failed to upload avatar", 500);
+    }
+  }
+
+  let bannerObj: { url: string; fileId: string } | undefined = undefined;
+  if (bannerFile) {
+    const fileName = `${userId}_banner_${Date.now()}`;
+    try {
+      if (userProfile.banner) {
+        await deleteImage(userProfile.banner.fileId);
+      }
+      const uploadedResponse = await uploadImage(
+        bannerFile,
+        fileName,
+        "/user-banners",
+      );
+
+      bannerObj = {
+        url: uploadedResponse.url,
+        fileId: uploadedResponse.fileId,
+      };
+      updateData.banner = bannerObj;
+    } catch {
+      throw new ApiError("Failed to upload banner", 500);
     }
   }
 

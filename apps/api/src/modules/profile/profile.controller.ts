@@ -23,12 +23,19 @@ const updateUserProfile = apiHandler(
   async (req: Request<{}, {}, UpdateProfileFormData>, res: Response) => {
     const userId = req.user?.id;
     const data = req.validatedBody as UpdateProfileFormData;
-    const avatarFile = req.file || null;
+    const files = req.files as {
+      avatar?: Express.Multer.File[];
+      banner?: Express.Multer.File[];
+    };
+
+    const avatarFile = files?.avatar?.[0] ?? null;
+    const bannerFile = files?.banner?.[0] ?? null;
 
     const profile = await profileService.updateUserProfile(
       userId as string,
       data,
       avatarFile,
+      bannerFile,
     );
 
     successResponse(res, "Profile Updated Successfully", profile);

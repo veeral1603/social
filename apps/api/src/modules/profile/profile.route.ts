@@ -6,6 +6,7 @@ import {
   updateProfileSchema,
   updateUsernameSchema,
 } from "../../../../../packages/shared-types/src/profile/profile.schema";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 
@@ -14,6 +15,10 @@ router.patch(
   "/me",
   requireAuth,
   validate(updateProfileSchema),
+  multerUpload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "coverPhoto", maxCount: 1 },
+  ]),
   profileController.updateUserProfile,
 ); // PATCH /api/profile
 router.patch(

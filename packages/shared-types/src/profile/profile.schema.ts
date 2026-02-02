@@ -8,7 +8,13 @@ export const updateProfileSchema = z.object({
   bio: z.string().max(160, "Bio cannot exceed 160 characters").optional(),
   avatar: z
     .object({
-      url: z.string().url("Invalid URL"),
+      url: z.url("Invalid URL"),
+      fileId: z.string().min(1, "File ID cannot be empty"),
+    })
+    .optional(),
+  banner: z
+    .object({
+      url: z.url("Invalid URL"),
       fileId: z.string().min(1, "File ID cannot be empty"),
     })
     .optional(),

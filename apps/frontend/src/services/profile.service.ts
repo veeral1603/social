@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import axiosInstance from "../lib/axios";
+import { sleep } from "../lib/utils";
 
 export const checkUsenameAvailability = async (username: string) => {
   try {
@@ -25,4 +26,10 @@ export const getUserProfile = async () => {
       error.response?.data.message || "Failed to get user profile.",
     );
   }
+};
+
+export const getUserProfileByUsername = async (username: string) => {
+  await sleep(1000);
+  const response = await axiosInstance.get(`/profile/@${username}`);
+  return response.data.data;
 };

@@ -1,4 +1,5 @@
 "use client";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
 import { useMobileSidebarStore } from "@/src/stores/mobileSidebarStore";
 import { NavLink } from "@/src/types";
 import Link from "next/link";
@@ -16,6 +17,11 @@ export default function SidebarMenuItem({
   const { closeMenu } = useMobileSidebarStore();
   const Icon = link.icon;
   const isActive = path === link.href;
+  const { auth } = useAuthContext();
+  const isProfileLink = link.label === "Profile";
+  if (isProfileLink && auth?.profile) {
+    link.href = `/profile/${auth.profile.username}`;
+  }
   if (type === "mobile") {
     return (
       <Link

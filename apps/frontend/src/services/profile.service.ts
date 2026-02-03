@@ -33,3 +33,15 @@ export const getUserProfileByUsername = async (username: string) => {
   const response = await axiosInstance.get(`/profile/@${username}`);
   return response.data.data;
 };
+
+export const updateProfile = async (formData: FormData) => {
+  try {
+    const response = await axiosInstance.patch("/profile/me", formData);
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(
+      error.response?.data.message || "Failed to update profile.",
+    );
+  }
+};

@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { Ellipsis, Link2, UserRoundX } from "lucide-react";
+import { Ellipsis, Link2, Search, UserRoundX } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProfileDropdownMenu({
@@ -41,6 +41,11 @@ export default function ProfileDropdownMenu({
         >
           <span>Copy link to profile</span>
           <Link2 size={16} />
+        </DropdownMenuItem>
+
+        <DropdownMenuItem className="flex items-center justify-between gap-2 rounded-[6px]">
+          <span>Search posts</span>
+          <Search size={16} />
         </DropdownMenuItem>
 
         {!isOwnProfile && (

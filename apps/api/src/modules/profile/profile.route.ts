@@ -14,11 +14,11 @@ router.get("/me", requireAuth, profileController.getSelfProfile); // GET /api/pr
 router.patch(
   "/me",
   requireAuth,
-  validate(updateProfileSchema),
   multerUpload.fields([
     { name: "avatar", maxCount: 1 },
-    { name: "coverPhoto", maxCount: 1 },
+    { name: "banner", maxCount: 1 },
   ]),
+  validate(updateProfileSchema),
   profileController.updateUserProfile,
 ); // PATCH /api/profile
 router.patch(

@@ -72,7 +72,9 @@ export default function ProfileInfo({ username }: { username: string }) {
         {/* Profile Details  */}
         <div className="flex flex-col gap-1 mt-2 md:mt-4">
           <div>
-            <h4 className="font-bold text-2xl md:text-4xl ">{profile?.name}</h4>
+            <h4 className="font-bold text-2xl md:text-4xl ">
+              {profile?.name || profile?.username}
+            </h4>
           </div>
 
           <div>

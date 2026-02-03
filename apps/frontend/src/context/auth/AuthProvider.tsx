@@ -3,6 +3,7 @@ import React from "react";
 import AuthContext from "./AuthContext";
 import { AuthState } from "./authContext.types";
 import { getCurrentUser } from "@/src/services/auth.service";
+import { Profile } from "@repo/shared-types";
 
 export default function AuthProvider({
   children,
@@ -39,9 +40,21 @@ export default function AuthProvider({
     setAuth({ status: "unauthenticated", user: null, profile: null });
   };
 
+  const setProfileInAuth = (profile: Profile) => {
+    setAuth((prevAuth) => ({
+      ...prevAuth,
+      profile,
+    }));
+  };
+
   return (
     <AuthContext.Provider
-      value={{ auth, refreshAuth: fetchCurrentUser, clearAuth }}
+      value={{
+        auth,
+        refreshAuth: fetchCurrentUser,
+        clearAuth,
+        setProfileInAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -33,8 +33,8 @@ async function updateUserProfile(
   bannerFile: Express.Multer.File | null,
 ): Promise<Profile> {
   const updateData: UpdateProfileFormData = {
-    name: data.name ?? undefined,
-    bio: data.bio || undefined,
+    name: data.name ?? "",
+    bio: data.bio ?? "",
   };
 
   const userProfile = await getProfileByUserId(userId);
@@ -59,7 +59,6 @@ async function updateUserProfile(
         url: uploadedResponse.url,
         fileId: uploadedResponse.fileId,
       };
-      updateData.avatar = avatarObj;
     } catch {
       throw new ApiError("Failed to upload avatar", 500);
     }
@@ -82,7 +81,6 @@ async function updateUserProfile(
         url: uploadedResponse.url,
         fileId: uploadedResponse.fileId,
       };
-      updateData.banner = bannerObj;
     } catch {
       throw new ApiError("Failed to upload banner", 500);
     }
@@ -90,7 +88,11 @@ async function updateUserProfile(
 
   const updatedProfile = await prisma.profile.update({
     where: { userId },
-    data: updateData as Prisma.ProfileUpdateInput,
+    data: {
+      ...updateData,
+      avatar: avatarObj,
+      banner: bannerObj,
+    } as Prisma.ProfileUpdateInput,
     omit: { createdAt: true, updatedAt: true, userId: true },
   });
 

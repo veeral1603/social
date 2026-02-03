@@ -3,21 +3,20 @@ import { z } from "zod";
 export const updateProfileSchema = z.object({
   name: z
     .string()
-    .min(3, "Full name must be at least 3 characters long.")
-    .optional(),
-  bio: z.string().max(160, "Bio cannot exceed 160 characters").optional(),
-  avatar: z
-    .object({
-      url: z.url("Invalid URL"),
-      fileId: z.string().min(1, "File ID cannot be empty"),
+    .trim()
+    .refine((val) => val === "" || val.length >= 3, {
+      message: "Full name must be at least 3 characters long.",
     })
-    .optional(),
-  banner: z
-    .object({
-      url: z.url("Invalid URL"),
-      fileId: z.string().min(1, "File ID cannot be empty"),
-    })
-    .optional(),
+    .optional()
+    .transform((val) => val ?? ""),
+
+  bio: z
+    .string()
+    .max(160, "Bio cannot exceed 160 characters")
+    .optional()
+    .transform((val) => (val ? val : "")),
+  avatar: z.instanceof(File).optional().nullable(),
+  banner: z.instanceof(File).optional().nullable(),
 });
 
 export const updateUsernameSchema = z.object({

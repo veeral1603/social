@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       "localhost",
       "i.pinimg.com",
       "res.cloudinary.com",
-      "imgkit.io",
+      "ik.imagekit.io",
       "pbs.twimg.com",
     ],
   },

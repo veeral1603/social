@@ -79,7 +79,7 @@ export default function EditProfileDialog({
       if (!response.success) throw new Error(response.message);
       toast.success("Profile updated successfully!");
       setProfileInAuth(response.data);
-      onOpenChange(false);
+      changeModalState(false);
     } catch (error) {
       toast.error((error as Error).message || "Failed to update profile.");
     } finally {
@@ -103,6 +103,8 @@ export default function EditProfileDialog({
       return;
     } else {
       onOpenChange(false);
+      setBannerImagePreview(null);
+      setAvatarImagePreview(null);
       form.reset();
       return;
     }

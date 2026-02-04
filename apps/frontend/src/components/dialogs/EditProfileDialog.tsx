@@ -17,7 +17,6 @@ import {
 } from "@/src/components/ui/field";
 import { Input } from "@/src/components/ui/input";
 import Image from "next/image";
-import { useAuthContext } from "@/src/hooks/useAuthContext";
 import { useForm, Controller } from "react-hook-form";
 import { UpdateProfileFormData } from "@repo/shared-types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +25,7 @@ import { Textarea } from "../ui/textarea";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
 import { updateProfile } from "@/src/services/profile.service";
+import { useProfileContext } from "@/src/hooks/useProfileContext";
 
 export default function EditProfileDialog({
   open,
@@ -42,10 +42,7 @@ export default function EditProfileDialog({
   >(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const {
-    auth: { profile },
-    setProfileInAuth,
-  } = useAuthContext();
+  const { profile, refreshProfile } = useProfileContext();
   const form = useForm<UpdateProfileFormData>({
     resolver: zodResolver(updateProfileSchema) as any,
     defaultValues: {
@@ -78,7 +75,7 @@ export default function EditProfileDialog({
       const response = await updateProfile(formData);
       if (!response.success) throw new Error(response.message);
       toast.success("Profile updated successfully!");
-      setProfileInAuth(response.data);
+      refreshProfile();
       changeModalState(false);
     } catch (error) {
       toast.error((error as Error).message || "Failed to update profile.");
@@ -213,7 +210,7 @@ export default function EditProfileDialog({
                         {...field}
                         id={field.name}
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="Your display name"
                         aria-invalid={fieldState.invalid}
                       />
                       {fieldState.invalid && (
@@ -232,9 +229,10 @@ export default function EditProfileDialog({
                       <Textarea
                         {...field}
                         id={field.name}
-                        placeholder="John Doe"
+                        placeholder="Something about you..."
                         aria-invalid={fieldState.invalid}
                         maxLength={160}
+                        className="h-24"
                       />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />

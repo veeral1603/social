@@ -1,16 +1,14 @@
 "use client";
 
-import { useAuthContext } from "@/src/hooks/useAuthContext";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { Ellipsis } from "lucide-react";
 import Link from "next/link";
+import { useProfileContext } from "@/src/hooks/useProfileContext";
 
 export default function ProfilePill() {
-  const { auth } = useAuthContext();
-  const profile = auth.profile;
-
+  const { profile } = useProfileContext();
   const [hovered, setHovered] = useState(false);
 
   if (!profile) return null;

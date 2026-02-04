@@ -19,7 +19,7 @@ export const checkUsenameAvailability = async (username: string) => {
 export const getUserProfile = async () => {
   try {
     const response = await axiosInstance.get("/profile/me");
-    return response.data;
+    return response.data.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
     throw new Error(

@@ -46,9 +46,9 @@ export const resendVerificationOtp = async () => {
   }
 };
 
-export const getCurrentUser = async (withProfile: boolean = false) => {
+export const getCurrentUser = async () => {
   try {
-    const response = await axiosInstance.get(`/auth/me?profile=${withProfile}`);
+    const response = await axiosInstance.get(`/auth/me`);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;

@@ -1,11 +1,11 @@
 "use client";
-import { useAuthContext } from "@/src/hooks/useAuthContext";
+
+import { useProfileContext } from "@/src/hooks/useProfileContext";
 import Image from "next/image";
 import React from "react";
 
 export default function MobileProfileSnapshot() {
-  const { auth } = useAuthContext();
-  const profile = auth.profile;
+  const { profile } = useProfileContext();
   if (!profile) return null;
 
   return (

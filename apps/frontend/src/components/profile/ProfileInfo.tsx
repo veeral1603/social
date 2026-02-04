@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import BackButton from "../ui/BackButton";
-import { useAuthContext } from "@/src/hooks/useAuthContext";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfileByUsername } from "@/src/services/profile.service";
@@ -10,10 +9,11 @@ import ProfileNotFound from "./ProfileNotFound";
 import ProfileSkeleton from "./ProfileSkeleton";
 import ProfileError from "./ProfileError";
 import ProfileActions from "./ProfileActions";
+import { useProfileContext } from "@/src/hooks/useProfileContext";
 
 export default function ProfileInfo({ username }: { username: string }) {
-  const { auth } = useAuthContext();
-  const isOwnProfile = auth?.profile?.username === username;
+  const { profile: ownProfile } = useProfileContext();
+  const isOwnProfile = ownProfile?.username === username;
   const {
     data: fetchedProfile,
     isLoading,
@@ -30,7 +30,7 @@ export default function ProfileInfo({ username }: { username: string }) {
       return failureCount < 2;
     },
   });
-  const profile = isOwnProfile ? auth?.profile : fetchedProfile;
+  const profile = isOwnProfile ? ownProfile : fetchedProfile;
   const isNotFound = isError && (error as AxiosError).response?.status === 404;
 
   if (isNotFound) {

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import Link from "next/link";
-import { useAuthContext } from "@/src/hooks/useAuthContext";
 import Image from "next/image";
+import { useProfileContext } from "@/src/hooks/useProfileContext";
 
 const quickAccessItems: NavLink[] = [
   { label: "Home", href: "/", icon: Home },
@@ -17,7 +17,7 @@ const quickAccessItems: NavLink[] = [
 
 export default function MobileQuickAccess() {
   const path = usePathname();
-  const { auth } = useAuthContext();
+  const { profile } = useProfileContext();
   return (
     <div className="fixed md:hidden bottom-0 inset-x-0 w-full h-16 border-t border-border bg-background px-8 flex items-center justify-between">
       {quickAccessItems.map((item) => {
@@ -29,10 +29,10 @@ export default function MobileQuickAccess() {
           </Link>
         );
       })}
-      <Link href={`/profile/${auth?.profile?.username}`}>
+      <Link href={`/profile/${profile?.username}`}>
         <div className="relative w-7 aspect-square rounded-full overflow-hidden flex items-center justify-center ">
           <Image
-            src={auth?.profile?.avatar?.url ?? "/images/avatar.jpg"}
+            src={profile?.avatar?.url ?? "/images/avatar.jpg"}
             alt="User Avatar"
             fill
             className="object-cover rounded-full"

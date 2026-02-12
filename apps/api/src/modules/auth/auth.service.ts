@@ -29,19 +29,22 @@ async function registerUser(
   const hashedPassword = await hashPassword(data.password);
   const emailVerificationOtp = generateOtp(6);
 
+  const normalizedUsername = data.username.trim().toLowerCase();
+  const normalizedEmail = data.email.trim().toLowerCase();
+
   const tempUser = await prisma.signupSession.upsert({
-    where: { email: data.email },
+    where: { email: normalizedEmail },
     update: {
       name: data.name ?? null,
-      username: data.username,
+      username: normalizedUsername,
       password: hashedPassword,
       verifyOtp: emailVerificationOtp,
       verifyOtpExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
     },
     create: {
-      email: data.email,
+      email: normalizedEmail,
       name: data.name ?? null,
-      username: data.username,
+      username: normalizedUsername,
       password: hashedPassword,
       verifyOtp: emailVerificationOtp,
       verifyOtpExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
@@ -82,7 +85,7 @@ async function verifyUserEmail(
     throw new ApiError("Invalid or expired OTP.", 400);
   }
 
-  const { userId } = await prisma.$transaction(async (tx) => {
+  const { userId, profileId } = await prisma.$transaction(async (tx) => {
     const newUser = await tx.user.create({
       data: {
         email: tempUser.email,
@@ -91,7 +94,7 @@ async function verifyUserEmail(
       },
     });
 
-    await tx.profile.create({
+    const profile = await tx.profile.create({
       data: {
         userId: newUser.id,
         name: tempUser.name ?? null,
@@ -103,11 +106,11 @@ async function verifyUserEmail(
       where: { id: tempUser.id },
     });
 
-    return { userId: newUser.id };
+    return { userId: newUser.id, profileId: profile.id };
   });
 
   const access_token = await generateToken(
-    { id: userId, email: tempUser.email },
+    { id: userId, email: tempUser.email, profileId },
     "14d",
   );
 
@@ -156,11 +159,12 @@ async function loginUser(
   data: LoginFormData,
 ): Promise<{ user: TempUser; access_token: string }> {
   const isEmail = data.usernameOrEmail.includes("@");
+  const normalizedUsernameOrEmail = data.usernameOrEmail.trim().toLowerCase();
 
   const userWithProfile = await prisma.user.findFirst({
     where: isEmail
-      ? { email: data.usernameOrEmail }
-      : { profile: { username: data.usernameOrEmail } },
+      ? { email: normalizedUsernameOrEmail }
+      : { profile: { username: normalizedUsernameOrEmail } },
     include: { profile: true },
   });
   if (!userWithProfile) {
@@ -174,7 +178,11 @@ async function loginUser(
     throw new ApiError("Invalid credentials.", 400);
   }
   const access_token = await generateToken(
-    { id: userWithProfile.id, email: userWithProfile.email },
+    {
+      id: userWithProfile.id,
+      email: userWithProfile.email,
+      profileId: userWithProfile.profile?.id,
+    },
     "14d",
   );
   if (!userWithProfile.profile) {

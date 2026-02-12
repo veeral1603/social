@@ -28,10 +28,15 @@ export default function MobileProfileSnapshot() {
 
       <div className="flex items-center gap-3 text-muted-foreground ">
         <p>
-          <span className="text-foreground font-semibold">0</span> followers
+          <span className="text-foreground font-semibold">
+            {profile.followersCount}
+          </span>{" "}
+          followers
         </p>
         <p>
-          <span className="text-foreground font-semibold">0</span>{" "}
+          <span className="text-foreground font-semibold">
+            {profile.followingCount}
+          </span>{" "}
           following{" "}
         </p>
       </div>

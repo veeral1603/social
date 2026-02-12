@@ -7,6 +7,7 @@ import {
   updateUsernameSchema,
 } from "../../../../../packages/shared-types/src/profile/profile.schema";
 import { multerUpload } from "../../config/multer.config";
+import optionalAuth from "../../middlewares/optionalAuth";
 
 const router = Router();
 
@@ -29,6 +30,6 @@ router.patch(
 ); // PATCH /api/profile/change-username
 
 router.get("/check-username", profileController.checkUsernameAvailability); // GET /api/profile/check-username?username=someusername
-router.get("/@:username", profileController.getProfileByUsername); // GET /api/profile/@:username
+router.get("/@:username", optionalAuth, profileController.getProfileByUsername); // GET /api/profile/@:username
 
 export default router;

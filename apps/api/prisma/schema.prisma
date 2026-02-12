@@ -52,6 +52,9 @@ model Profile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]
+
+  followers Follow[] @relation("Following")
+  following Follow[] @relation("Follower")
 }
 
 model Post {
@@ -61,4 +64,20 @@ model Post {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Follow {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  followerId String  @db.ObjectId
+  follower   Profile @relation("Follower", fields: [followerId], references: [id])
+
+  followingId String  @db.ObjectId
+  following   Profile @relation("Following", fields: [followingId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }

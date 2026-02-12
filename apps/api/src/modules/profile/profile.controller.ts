@@ -15,7 +15,12 @@ const getSelfProfile = apiHandler(async (req: Request, res: Response) => {
 
 const getProfileByUsername = apiHandler(async (req: Request, res: Response) => {
   const username = req.params["username"];
-  const profile = await profileService.getProfileByUsername(username as string);
+  const currentUserProfileId = req.user?.profileId;
+
+  const profile = await profileService.getProfileByUsername(
+    username as string,
+    currentUserProfileId as string,
+  );
   successResponse(res, "Profile fetched successfully", profile);
 });
 

@@ -12,6 +12,21 @@ export type Profile = {
   bio?: string | null;
   avatar?: ImageType | null;
   banner?: ImageType | null;
+
+  followersCount: number;
+  followingCount: number;
+  isFollowing?: boolean;
+};
+
+export type UpdatedProfileResponse = {
+  name?: string | null;
+  bio?: string | null;
+  avatar?: ImageType | null;
+  banner?: ImageType | null;
+};
+
+export type UpdatedUsernameResponse = {
+  username: string;
 };
 
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;

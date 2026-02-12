@@ -16,6 +16,7 @@ export default function ImageOptionsDropdown({
   onRemove,
   existingImage,
   children,
+  isDeleted = false,
 }: {
   type: "avatar" | "banner";
   align?: "start" | "center" | "end";
@@ -23,6 +24,7 @@ export default function ImageOptionsDropdown({
   onRemove: () => void;
   existingImage: boolean;
   children: React.ReactNode;
+  isDeleted?: boolean;
 }) {
   return (
     <DropdownMenu>
@@ -35,7 +37,7 @@ export default function ImageOptionsDropdown({
           <span>Upload new {type}</span>
           <Image size={16} />
         </DropdownMenuItem>
-        {existingImage && (
+        {existingImage && !isDeleted && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem

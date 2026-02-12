@@ -49,6 +49,7 @@ export default function ProfileImageEditor({
         existingImage={Boolean(existingImageUrl)}
         onInputFieldOpen={openPicker}
         onRemove={onRemoveImage}
+        isDeleted={isDeleted}
       >
         <button
           className={`aspect-square rounded-full flex items-center justify-center absolute ${type === "banner" ? "bottom-2 right-2 size-8 " : "bottom-0 right-0 size-7"} bg-black/80 hover:bg-black transition-colors cursor-pointer`}

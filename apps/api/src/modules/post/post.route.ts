@@ -13,5 +13,8 @@ router.put(
   validate(editPostSchema),
   postController.editPost,
 );
+router.get("/:id", postController.getPostById);
+router.get("/me", requireAuth, postController.getCurrentUserPosts);
+router.get("/user/@:username", postController.getPostsByUsername);
 
 export default router;

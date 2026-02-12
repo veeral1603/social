@@ -17,9 +17,12 @@ import { useForm } from "react-hook-form";
 import { PostFormData, postSchema } from "@repo/shared-types";
 import { toast } from "sonner";
 import { createPost } from "@/src/services/post.service";
+import { Spinner } from "../ui/spinner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function PostDialog() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const queryClient = useQueryClient();
   const { isOpen, closeDialog } = usePostDialog();
   const { profile } = useProfileContext();
   const form = useForm<PostFormData>({
@@ -34,6 +37,9 @@ export default function PostDialog() {
       const response = await createPost(data);
       if (!response.success)
         throw new Error(response.message || "Failed to create post");
+      queryClient.invalidateQueries({
+        queryKey: ["user-posts", profile?.username],
+      });
       toast.success("Post created successfully!");
       form.reset();
       closeDialog();
@@ -61,12 +67,13 @@ export default function PostDialog() {
               New Post
             </DialogTitle>
             <div className="flex items-center gap-2">
-              {/* {isSubmitting && <Spinner className="size-5" />} */}
+              {isSubmitting && <Spinner className="size-5" />}
               <Button
                 type="submit"
                 variant="secondary"
                 size="sm"
                 className="w-max ml-auto"
+                disabled={isSubmitting}
               >
                 Post
               </Button>

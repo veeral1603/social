@@ -21,3 +21,23 @@ export const deletePost = async (postId: string) => {
     throw new Error(error.response?.data.message || "Failed to delete post.");
   }
 };
+
+export const getPostById = async (postId: string) => {
+  try {
+    const response = await axiosInstance.get(`/post/${postId}`);
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data.message || "Failed to fetch post.");
+  }
+};
+
+export const getCurrentUserPosts = async () => {
+  const response = await axiosInstance.get("/post/me");
+  return response.data.data;
+};
+
+export const getPostsByUsername = async (username: string) => {
+  const response = await axiosInstance.get(`/post/user/@${username}`);
+  return response.data.data;
+};

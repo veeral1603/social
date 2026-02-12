@@ -14,8 +14,8 @@ export type Profile = {
   avatar?: ImageType | null;
   banner?: ImageType | null;
 
-  followersCount: number;
-  followingCount: number;
+  followersCount?: number;
+  followingCount?: number;
   isFollowing?: boolean;
   isFollower?: boolean;
 };

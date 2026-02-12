@@ -10,7 +10,7 @@ export type Post = {
   content: string;
   createdAt: Date;
   updatedAt: Date;
-  Author?: Profile;
+  author?: Profile;
 };
 
 export type EditPostData = z.infer<typeof editPostSchema>;

@@ -38,7 +38,7 @@ export default function FollowButton({
   };
   return (
     <Button variant="default" size="sm" onClick={onFollow}>
-      {!isLoading && <p>Follow</p>}
+      {!isLoading && (profile.isFollower ? <p>Follow Back</p> : <p>Follow</p>)}
       {isLoading && <Spinner className="size-5" />}
     </Button>
   );

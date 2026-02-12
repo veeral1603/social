@@ -18,7 +18,7 @@ export default function ProfileProvider({
   });
 
   const refreshProfile = async () => {
-    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
   };
 
   React.useEffect(() => {

@@ -17,6 +17,7 @@ export type Profile = {
   followersCount: number;
   followingCount: number;
   isFollowing?: boolean;
+  isFollower?: boolean;
 };
 
 export type UpdatedProfileResponse = {

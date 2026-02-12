@@ -37,6 +37,12 @@ export default function ProfileInfo({ username }: { username: string }) {
     profile?.followersCount || 0,
   );
 
+  React.useEffect(() => {
+    if (profile?.followersCount !== undefined) {
+      setFollowerCount(profile.followersCount);
+    }
+  }, [profile?.followersCount]);
+
   if (isNotFound) {
     return <ProfileNotFound />;
   }
@@ -85,8 +91,13 @@ export default function ProfileInfo({ username }: { username: string }) {
             </h4>
           </div>
 
-          <div>
+          <div className="flex items-center gap-2">
             <p className="text-muted-foreground">@{profile?.username}</p>
+            {profile.isFollower && (
+              <div className="px-1 text-muted-foreground rounded-[4px] bg-muted  text-[10px] border border-border ">
+                Follows you
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3 text-muted-foreground ">

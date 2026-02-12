@@ -59,8 +59,9 @@ async function getProfileByUsername(
     throw new ApiError("Profile not found", 404);
   }
   let isFollowing = false;
+  let isFollower = false;
   if (currentUserProfileId) {
-    const followRecord = await prisma.follow.findUnique({
+    const isFollowingRecored = await prisma.follow.findUnique({
       where: {
         followerId_followingId: {
           followerId: currentUserProfileId,
@@ -68,7 +69,17 @@ async function getProfileByUsername(
         },
       },
     });
-    isFollowing = !!followRecord;
+    const isFollowerRecord = await prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: p.id,
+          followingId: currentUserProfileId,
+        },
+      },
+    });
+
+    isFollowing = !!isFollowingRecored;
+    isFollower = !!isFollowerRecord;
   }
   const profile = {
     id: p.id,
@@ -80,6 +91,7 @@ async function getProfileByUsername(
     followersCount: p._count.followers,
     followingCount: p._count.following,
     isFollowing,
+    isFollower,
   };
   return profile;
 }

@@ -19,7 +19,7 @@ export default function MobileQuickAccess() {
   const path = usePathname();
   const { profile } = useProfileContext();
   return (
-    <div className="fixed md:hidden bottom-0 inset-x-0 w-full h-16 border-t border-border bg-background px-8 flex items-center justify-between">
+    <div className="fixed md:hidden bottom-0 inset-x-0 w-full h-14 border-t border-border bg-background px-8 flex items-center justify-between">
       {quickAccessItems.map((item) => {
         const Icon = item.icon;
         const isActive = path === item.href;

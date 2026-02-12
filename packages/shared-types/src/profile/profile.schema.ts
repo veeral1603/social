@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const stringToBoolean = z.preprocess((val) => {
+  if (val === "true") return true;
+  if (val === "false") return false;
+  return val;
+}, z.boolean());
+
 export const updateProfileSchema = z.object({
   name: z
     .string()
@@ -17,6 +23,8 @@ export const updateProfileSchema = z.object({
     .transform((val) => (val ? val : "")),
   avatar: z.instanceof(File).optional().nullable(),
   banner: z.instanceof(File).optional().nullable(),
+  deleteAvatar: stringToBoolean.default(false),
+  deleteBanner: stringToBoolean.default(false),
 });
 
 export const updateUsernameSchema = z.object({

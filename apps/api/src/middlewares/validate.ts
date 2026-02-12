@@ -4,6 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 
 export const validate =
   (schema: ZodType) => (req: Request, res: Response, next: NextFunction) => {
+    // console.log("Raw Request Body:", req.body);
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
@@ -17,6 +18,7 @@ export const validate =
 
     // overwrite body with validated & typed data
     req.validatedBody = result.data;
+    // console.log("Validated Data:", req.validatedBody);
 
     return next();
   };

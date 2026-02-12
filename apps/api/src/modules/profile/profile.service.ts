@@ -35,11 +35,23 @@ async function updateUserProfile(
   const updateData: UpdateProfileFormData = {
     name: data.name ?? "",
     bio: data.bio ?? "",
+    deleteAvatar: data.deleteAvatar ?? false,
+    deleteBanner: data.deleteBanner ?? false,
   };
 
   const userProfile = await getProfileByUserId(userId);
   if (!userProfile) {
     throw new ApiError("Profile not found", 404);
+  }
+  if (updateData.deleteAvatar) {
+    if (userProfile.avatar) {
+      await deleteImage(userProfile.avatar.fileId);
+    }
+  }
+  if (updateData.deleteBanner) {
+    if (userProfile.banner) {
+      await deleteImage(userProfile.banner.fileId);
+    }
   }
 
   let avatarObj: { url: string; fileId: string } | undefined = undefined;
@@ -89,9 +101,10 @@ async function updateUserProfile(
   const updatedProfile = await prisma.profile.update({
     where: { userId },
     data: {
-      ...updateData,
-      avatar: avatarObj,
-      banner: bannerObj,
+      name: updateData.name,
+      bio: updateData.bio,
+      avatar: (data.deleteAvatar && !avatarObj) ? null : avatarObj,
+      banner: (data.deleteBanner && !bannerObj) ? null : bannerObj,
     } as Prisma.ProfileUpdateInput,
     omit: { createdAt: true, updatedAt: true, userId: true },
   });

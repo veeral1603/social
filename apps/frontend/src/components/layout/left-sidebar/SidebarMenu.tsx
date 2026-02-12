@@ -1,3 +1,4 @@
+"use client";
 import {
   Bell,
   Bookmark,
@@ -12,6 +13,7 @@ import React from "react";
 import type { NavLink } from "@/src/types";
 import { Button } from "../../ui/button";
 import SidebarMenuItem from "./SidebarMenuItem";
+import usePostDialog from "@/src/stores/postDialogStore";
 
 const allNavLinks: NavLink[] = [
   { label: "Home", href: "/", icon: Home },
@@ -30,6 +32,7 @@ export default function SidebarMenu({
   links?: string[];
   type?: "mobile" | "desktop";
 }) {
+  const { openDialog } = usePostDialog();
   let navLinks: NavLink[] = [];
   if (links) {
     links.forEach((link) => {
@@ -44,7 +47,11 @@ export default function SidebarMenu({
         <SidebarMenuItem link={link} key={index} type={type} />
       ))}
 
-      <Button className="mt-4 hidden xl:flex w-max ml-4" size="lg">
+      <Button
+        className="mt-4 hidden xl:flex w-max ml-4"
+        size="lg"
+        onClick={openDialog}
+      >
         <PencilLine size={20} /> <p>New Post</p>
       </Button>
     </div>

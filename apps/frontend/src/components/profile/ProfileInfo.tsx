@@ -121,7 +121,9 @@ export default function ProfileInfo({ username }: { username: string }) {
 
           {profile?.bio && (
             <div className="mt-1">
-              <p className="leading-tight md:text-base">{profile.bio}</p>
+              <p className="leading-tight md:text-base whitespace-pre-wrap">
+                {profile.bio}
+              </p>
             </div>
           )}
         </div>

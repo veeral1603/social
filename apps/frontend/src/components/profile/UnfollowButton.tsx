@@ -35,7 +35,12 @@ export default function UnfollowButton({
     }
   };
   return (
-    <Button variant="secondary" size="sm" onClick={onUnfollow}>
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={onUnfollow}
+      disabled={isLoading}
+    >
       {!isLoading && <p>Unfollow</p>}
       {isLoading && <Spinner className="size-5" />}
     </Button>

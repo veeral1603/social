@@ -44,7 +44,6 @@ export default function EditProfileDialog({
   }, [profile, form]);
 
   const onSubmit = async (data: UpdateProfileFormData) => {
-    console.log(data);
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("name", data.name?.trim() ?? "");

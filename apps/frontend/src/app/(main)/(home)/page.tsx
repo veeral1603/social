@@ -1,11 +1,10 @@
-import Link from "next/link";
+import HomePostCard from "@/src/components/post/HomePostCard";
 import React from "react";
 
 export default function HomePage() {
   return (
     <div>
-      <Link href="/profile/rdj6969">Valid Profile</Link>
-      <Link href="/profile/rdj69asdasdad69">InValid Profile</Link>
+      <HomePostCard />
     </div>
   );
 }

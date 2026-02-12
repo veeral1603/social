@@ -8,7 +8,7 @@ export const globalErrorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  console.error("Global Error Handler:", error);
+  // console.error("Global Error Handler:", error);
   if (error instanceof ApiError) {
     return errorResponse(res, error.message, error.status, error.errors);
   }

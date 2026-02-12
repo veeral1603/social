@@ -12,7 +12,7 @@ export default function ProfileProvider({
   const [profile, setProfile] = React.useState(null);
   const queryClient = useQueryClient();
   const { data, isSuccess } = useQuery({
-    queryKey: ["userProfile"],
+    queryKey: ["user-profile"],
     queryFn: getUserProfile,
     staleTime: 100000000,
   });

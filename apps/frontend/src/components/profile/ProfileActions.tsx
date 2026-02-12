@@ -3,14 +3,22 @@ import { Button } from "../ui/button";
 import { MessageCircleMore } from "lucide-react";
 import ProfileDropdownMenu from "./ProfileDropdownMenu";
 import EditProfileDialog from "../dialogs/EditProfileDialog";
+import FollowButton from "./FollowButton";
+import UnfollowButton from "./UnfollowButton";
+import { Profile } from "@repo/shared-types";
 
 export default function ProfileActions({
   isOwnProfile,
+  profile,
+  setFollowerCount,
 }: {
   isOwnProfile: boolean;
+  profile: Profile;
+  setFollowerCount: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [editProfileDialogOpen, setEditProfileDialogOpen] =
     React.useState(false);
+  const [isFollowing, setIsFollowing] = React.useState(profile.isFollowing);
   return (
     <>
       <EditProfileDialog
@@ -29,15 +37,29 @@ export default function ProfileActions({
             </Button>
           </>
         )}
+
         {/* For Others */}
         {!isOwnProfile && (
           <>
-            <Button variant="secondary" size="icon-sm">
+            <Button variant="outline" size="icon-sm">
               <MessageCircleMore size={16} strokeWidth={2.5} />
             </Button>
-            <Button variant="default" size="sm">
-              Follow
-            </Button>
+
+            {/* Follow Button  */}
+            {isFollowing && (
+              <UnfollowButton
+                profile={profile}
+                setIsFollowing={setIsFollowing}
+                setFollowerCount={setFollowerCount}
+              />
+            )}
+            {!isFollowing && (
+              <FollowButton
+                profile={profile}
+                setIsFollowing={setIsFollowing}
+                setFollowerCount={setFollowerCount}
+              />
+            )}
           </>
         )}
         <ProfileDropdownMenu isOwnProfile={isOwnProfile} />

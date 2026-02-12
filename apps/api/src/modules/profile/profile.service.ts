@@ -20,13 +20,14 @@ async function getProfileByUserId(userId: string): Promise<Profile> {
         },
       },
     },
-    omit: { createdAt: true, updatedAt: true, userId: true, id: true },
+    omit: { createdAt: true, updatedAt: true, userId: true },
   });
   if (!p) {
     throw new ApiError("Profile not found", 404);
   }
 
   const profile = {
+    id: p.id,
     name: p.name,
     username: p.username,
     bio: p.bio,
@@ -70,6 +71,7 @@ async function getProfileByUsername(
     isFollowing = !!followRecord;
   }
   const profile = {
+    id: p.id,
     name: p.name,
     username: p.username,
     bio: p.bio,

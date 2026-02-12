@@ -33,6 +33,10 @@ export default function ProfileInfo({ username }: { username: string }) {
   const profile = isOwnProfile ? ownProfile : fetchedProfile;
   const isNotFound = isError && (error as AxiosError).response?.status === 404;
 
+  const [followerCount, setFollowerCount] = React.useState<number>(
+    profile?.followersCount || 0,
+  );
+
   if (isNotFound) {
     return <ProfileNotFound />;
   }
@@ -66,7 +70,11 @@ export default function ProfileInfo({ username }: { username: string }) {
 
       <div className="p-3 md:p-4 relative border-b border-border">
         <div className="flex items-center justify-end">
-          <ProfileActions isOwnProfile={isOwnProfile} />
+          <ProfileActions
+            isOwnProfile={isOwnProfile}
+            profile={profile}
+            setFollowerCount={setFollowerCount}
+          />
         </div>
 
         {/* Profile Details  */}
@@ -84,7 +92,7 @@ export default function ProfileInfo({ username }: { username: string }) {
           <div className="flex items-center gap-3 text-muted-foreground ">
             <p>
               <span className="text-foreground font-semibold">
-                {profile?.followersCount}
+                {followerCount}
               </span>{" "}
               followers
             </p>

@@ -7,6 +7,7 @@ type ImageType = {
 };
 
 export type Profile = {
+  id?: string;
   name?: string | null;
   username: string;
   bio?: string | null;

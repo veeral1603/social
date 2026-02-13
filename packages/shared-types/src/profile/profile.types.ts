@@ -1,5 +1,5 @@
 import { updateProfileSchema, updateUsernameSchema } from "./profile.schema";
-import z from "zod";
+import { z } from "zod";
 
 type ImageType = {
   url: string;

@@ -4,7 +4,7 @@ import axiosInstance from "../lib/axios";
 export const followUser = async (profileId: string) => {
   try {
     console.log("Attempting to follow user with profile ID:", profileId);
-    const response = await axiosInstance.post(`/follow/${profileId}`);
+    const response = await axiosInstance.post(`/follows/${profileId}`);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
@@ -14,7 +14,7 @@ export const followUser = async (profileId: string) => {
 
 export const unfollowUser = async (profileId: string) => {
   try {
-    const response = await axiosInstance.delete(`/follow/${profileId}`);
+    const response = await axiosInstance.delete(`/follows/${profileId}`);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;

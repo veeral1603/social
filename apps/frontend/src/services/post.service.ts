@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 
 export const createPost = async (data: PostFormData) => {
   try {
-    const response = await axiosInstance.post("/post", data);
+    const response = await axiosInstance.post("/posts", data);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
@@ -14,7 +14,7 @@ export const createPost = async (data: PostFormData) => {
 
 export const deletePost = async (postId: string) => {
   try {
-    const response = await axiosInstance.delete(`/post/${postId}`);
+    const response = await axiosInstance.delete(`/posts/${postId}`);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
@@ -24,7 +24,7 @@ export const deletePost = async (postId: string) => {
 
 export const getPostById = async (postId: string) => {
   try {
-    const response = await axiosInstance.get(`/post/${postId}`);
+    const response = await axiosInstance.get(`/posts/${postId}`);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
@@ -33,11 +33,11 @@ export const getPostById = async (postId: string) => {
 };
 
 export const getCurrentUserPosts = async () => {
-  const response = await axiosInstance.get("/post/me");
+  const response = await axiosInstance.get("/posts/me");
   return response.data.data;
 };
 
 export const getPostsByUsername = async (username: string) => {
-  const response = await axiosInstance.get(`/post/user/@${username}`);
+  const response = await axiosInstance.get(`/posts/user/@${username}`);
   return response.data.data;
 };

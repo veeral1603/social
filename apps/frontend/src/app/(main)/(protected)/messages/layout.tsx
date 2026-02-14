@@ -1,7 +1,9 @@
+"use client";
 import HeaderShell from "@/src/components/layout/header/HeaderShell";
 import PageTitle from "@/src/components/PageTitle";
 import BackButton from "@/src/components/ui/BackButton";
 import { Button } from "@/src/components/ui/button";
+import useConversationDialog from "@/src/stores/conversationDialogStore";
 import { Plus } from "lucide-react";
 import React from "react";
 
@@ -10,6 +12,7 @@ export default function MessagesLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { openDialog } = useConversationDialog();
   return (
     <>
       <HeaderShell
@@ -20,7 +23,7 @@ export default function MessagesLayout({
         }
         right={
           <div>
-            <Button className="default" size="sm">
+            <Button className="default" size="sm" onClick={() => openDialog()}>
               <Plus size={18} />
               <p>New Chat</p>
             </Button>

@@ -5,7 +5,7 @@ import { sleep } from "../lib/utils";
 export const checkUsenameAvailability = async (username: string) => {
   try {
     const response = await axiosInstance.get(
-      `/profile/check-username?username=${username}`,
+      `/profiles/check-username?username=${username}`,
     );
     return response.data;
   } catch (err) {
@@ -18,7 +18,7 @@ export const checkUsenameAvailability = async (username: string) => {
 
 export const getUserProfile = async () => {
   try {
-    const response = await axiosInstance.get("/profile/me");
+    const response = await axiosInstance.get("/profiles/me");
     return response.data.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
@@ -30,13 +30,13 @@ export const getUserProfile = async () => {
 
 export const getUserProfileByUsername = async (username: string) => {
   await sleep(1000);
-  const response = await axiosInstance.get(`/profile/@${username}`);
+  const response = await axiosInstance.get(`/profiles/@${username}`);
   return response.data.data;
 };
 
 export const updateProfile = async (formData: FormData) => {
   try {
-    const response = await axiosInstance.patch("/profile/me", formData);
+    const response = await axiosInstance.patch("/profiles/me", formData);
     return response.data;
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;

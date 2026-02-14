@@ -40,6 +40,9 @@ export default function PostDialog() {
       queryClient.invalidateQueries({
         queryKey: ["user-posts", profile?.username],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["feed"],
+      });
       toast.success("Post created successfully!");
       form.reset();
       closeDialog();

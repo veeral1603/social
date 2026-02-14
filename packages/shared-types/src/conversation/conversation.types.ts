@@ -18,10 +18,11 @@ export type Conversation = {
   updatedAt: Date;
 
   lastMessageId?: string;
+  lastMessage?: Message;
   conversationParticipants?: ConversationParticipant[];
   messages?: Message[];
 
-  otherParticipant?: { profile: Profile };
+  otherParticipant?: { id: string; profile: Profile };
 };
 
 export type FindOrCreateConversationInput = z.infer<

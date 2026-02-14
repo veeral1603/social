@@ -19,7 +19,6 @@ async function getUserConversations(userId: string) {
               profile: { select: { avatar: true, username: true, name: true } },
             },
             omit: {
-              id: true,
               password: true,
               email: true,
               isVerified: true,
@@ -62,6 +61,7 @@ async function getConversation(userId: string, participantId: string) {
         },
       ],
     },
+    include: { messages: { orderBy: { createdAt: "asc" } } },
   });
 
   return conversation;

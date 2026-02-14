@@ -29,3 +29,11 @@ export function formatTimeAgo(date: Date | string) {
 
   return "just now";
 }
+
+export function formatTime(date: Date | string) {
+  const d = new Date(date);
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  const ampm = d.getHours() >= 12 ? "PM" : "AM";
+  const displayHours = String(d.getHours() % 12 || 12).padStart(2, "0");
+  return `${displayHours}:${minutes} ${ampm}`;
+}

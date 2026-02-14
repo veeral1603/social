@@ -1,4 +1,6 @@
+import type { Message } from "@repo/shared-types";
 import prisma from "../../lib/prisma";
+import ApiError from "../../utils/apiError";
 
 async function getUserConversations(userId: string) {
   const conversations = await prisma.conversation.findMany({
@@ -42,6 +44,27 @@ async function getUserConversations(userId: string) {
   });
 
   return refinedParticipants;
+}
+
+async function getConversation(userId: string, participantId: string) {
+  const conversation = await prisma.conversation.findFirst({
+    where: {
+      AND: [
+        {
+          conversationParticipants: {
+            some: { userId },
+          },
+        },
+        {
+          conversationParticipants: {
+            some: { userId: participantId },
+          },
+        },
+      ],
+    },
+  });
+
+  return conversation;
 }
 
 async function findOrCreateConversation(userId: string, participantId: string) {
@@ -88,4 +111,24 @@ async function findOrCreateConversation(userId: string, participantId: string) {
   return conversation;
 }
 
-export default { getUserConversations, findOrCreateConversation };
+async function getConversationMessages(
+  conversationId: string,
+): Promise<Message[]> {
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    include: { messages: { orderBy: { createdAt: "asc" } } },
+  });
+  if (!conversation) {
+    throw new ApiError("Conversation not found", 404);
+  }
+  const messages = conversation.messages;
+
+  return messages;
+}
+
+export default {
+  getUserConversations,
+  getConversation,
+  findOrCreateConversation,
+  getConversationMessages,
+};

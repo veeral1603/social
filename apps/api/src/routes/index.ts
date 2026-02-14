@@ -7,6 +7,7 @@ import requireAuth from "../middlewares/requireAuth";
 import feedRoutes from "../modules/feed/feed.route";
 import conversationRoutes from "../modules/conversation/conversation.route";
 import userRoutes from "../modules/user/user.route";
+import messageRoutes from "../modules/message/message.route";
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use("/follows", requireAuth, followRoutes);
 router.use("/feed", feedRoutes);
 router.use("/conversations", requireAuth, conversationRoutes);
 router.use("/users", userRoutes);
+router.use("/messages", requireAuth, messageRoutes);
 
 export default router;

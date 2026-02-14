@@ -1,15 +1,14 @@
-import { findOrCreateConversationSchema } from "@repo/shared-types";
 import { Router } from "express";
 import conversationController from "./conversation.controller";
-import { validate } from "../../middlewares/validate";
 const router = Router();
 
-router.get("/", conversationController.getUserConversations);
+router.get("/me", conversationController.getUserConversations);
 
-router.post(
-  "/",
-  validate(findOrCreateConversationSchema),
-  conversationController.findOrCreateConversation,
+router.get("/:participantId", conversationController.getConversation);
+
+router.get(
+  "/:conversationId/messages",
+  conversationController.getConversationMessages,
 );
 
 export default router;

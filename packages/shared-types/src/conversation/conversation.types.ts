@@ -1,5 +1,4 @@
 import { findOrCreateConversationSchema } from "./conversation.schema";
-import { UserWithProfile } from "./../user/user.types";
 import type { Message } from "../message/message.types";
 import { z } from "zod";
 import { Profile } from "../profile/profile.types";

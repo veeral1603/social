@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import axiosInstance from "../lib/axios";
 import { sleep } from "../lib/utils";
+import { Profile } from "@repo/shared-types";
 
 export const checkUsenameAvailability = async (username: string) => {
   try {
@@ -28,10 +29,16 @@ export const getUserProfile = async () => {
   }
 };
 
+export const getProfileByUserId = async (userId: string): Promise<Profile> => {
+  await sleep(1000);
+  const response = await axiosInstance.get(`/profiles/id/${userId}`);
+  return response.data.data;
+};
+
 export const getUserProfileByUsername = async (username: string) => {
   await sleep(1000);
   const response = await axiosInstance.get(`/profiles/@${username}`);
-  return response.data.data;
+  return response.data;
 };
 
 export const updateProfile = async (formData: FormData) => {

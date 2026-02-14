@@ -13,7 +13,7 @@ export default function SettingsLayout({
       <HeaderShell
         left={
           <div className="flex items-center gap-2">
-            <BackButton /> <PageTitle>Saved</PageTitle>
+            <BackButton /> <PageTitle>Settings</PageTitle>
           </div>
         }
       />

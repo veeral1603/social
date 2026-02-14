@@ -7,6 +7,12 @@ import type {
 } from "@repo/shared-types";
 import { apiHandler } from "../../utils/apiHandler";
 
+const getProfileByUserId = apiHandler(async (req: Request, res: Response) => {
+  const userId = req.params["userId"];
+  const profile = await profileService.getProfileByUserId(userId as string);
+  successResponse(res, "Profile fetched successfully", profile);
+});
+
 const getSelfProfile = apiHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const profile = await profileService.getProfileByUserId(userId as string);
@@ -71,6 +77,7 @@ export const updateUsername = apiHandler(
   },
 );
 export default {
+  getProfileByUserId,
   getSelfProfile,
   getProfileByUsername,
   updateUserProfile,

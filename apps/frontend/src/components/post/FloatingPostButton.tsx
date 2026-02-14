@@ -4,12 +4,15 @@ import { Button } from "../ui/button";
 import { PencilLine } from "lucide-react";
 import usePostDialog from "@/src/stores/postDialogStore";
 import { useAuthContext } from "@/src/hooks/useAuthContext";
+import { usePathname } from "next/navigation";
 
 export default function FloatingPostButton() {
   const { isOpen, openDialog } = usePostDialog();
+  const path = usePathname();
   if (isOpen) return null;
   const { auth } = useAuthContext();
   if (!auth) return null;
+  if (path.includes("/messages/")) return null; // hide post button on chat page
   return (
     <Button
       variant="default"

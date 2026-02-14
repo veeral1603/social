@@ -24,7 +24,7 @@ export default function RootLayout({
         <LeftSidebar />
 
         <div className="min-h-screen md:border-x md:border-border w-full relative">
-          <main className="h-full">{children}</main>
+          <main className="h-full ">{children}</main>
           <MobileQuickAccess />
           <PostDialog />
           <FloatingPostButton />

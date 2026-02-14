@@ -11,7 +11,7 @@ import optionalAuth from "../../middlewares/optionalAuth";
 
 const router = Router();
 
-router.get("/me", requireAuth, profileController.getSelfProfile); // GET /api/profile
+router.get("/me", requireAuth, profileController.getSelfProfile); // GET /api/profile/me
 router.patch(
   "/me",
   requireAuth,
@@ -31,5 +31,6 @@ router.patch(
 
 router.get("/check-username", profileController.checkUsernameAvailability); // GET /api/profile/check-username?username=someusername
 router.get("/@:username", optionalAuth, profileController.getProfileByUsername); // GET /api/profile/@:username
+router.get("/id/:userId", optionalAuth, profileController.getProfileByUserId); // GET /api/profile/id/:userId
 
 export default router;

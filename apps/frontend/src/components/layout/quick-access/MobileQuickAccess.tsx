@@ -18,6 +18,7 @@ const quickAccessItems: NavLink[] = [
 export default function MobileQuickAccess() {
   const path = usePathname();
   const { profile } = useProfileContext();
+  if (path.includes("/messages/")) return null; // hide quick access on chat page
   return (
     <div className="fixed md:hidden bottom-0 inset-x-0 w-full h-14 border-t border-border bg-background px-8 flex items-center justify-between">
       {quickAccessItems.map((item) => {

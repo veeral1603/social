@@ -1,9 +1,8 @@
 import app from "./app";
-import "dotenv/config"
+import "dotenv/config";
 
 const PORT = process.env["PORT"] || 3001;
 
-console.log("BOOT TIME:", new Date().toLocaleTimeString());
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
 });

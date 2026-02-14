@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useProfileContext } from "@/src/hooks/useProfileContext";
+import Avatar from "../../profile/Avatar";
 
 const quickAccessItems: NavLink[] = [
   { label: "Home", href: "/", icon: Home },
@@ -31,14 +31,7 @@ export default function MobileQuickAccess() {
         );
       })}
       <Link href={`/profile/${profile?.username}`}>
-        <div className="relative w-7 aspect-square rounded-full overflow-hidden flex items-center justify-center ">
-          <Image
-            src={profile?.avatar?.url ?? "/images/avatar.jpg"}
-            alt="User Avatar"
-            fill
-            className="object-cover rounded-full"
-          />
-        </div>
+        <Avatar className="w-7!" src={profile?.avatar?.url} />
       </Link>
     </div>
   );

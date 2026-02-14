@@ -10,10 +10,12 @@ import ProfileSkeleton from "./ProfileSkeleton";
 import ProfileError from "./ProfileError";
 import ProfileActions from "./ProfileActions";
 import { useProfileContext } from "@/src/hooks/useProfileContext";
+import Avatar from "./Avatar";
 
 export default function ProfileInfo({ username }: { username: string }) {
   const { profile: ownProfile } = useProfileContext();
   const isOwnProfile = ownProfile?.username === username;
+
   const {
     data: fetchedProfile,
     isLoading,
@@ -30,7 +32,8 @@ export default function ProfileInfo({ username }: { username: string }) {
       return failureCount < 2;
     },
   });
-  const profile = isOwnProfile ? ownProfile : fetchedProfile;
+
+  const profile = isOwnProfile ? ownProfile : fetchedProfile?.data;
   const isNotFound = isError && (error as AxiosError).response?.status === 404;
 
   const [followerCount, setFollowerCount] = React.useState<number>(
@@ -130,14 +133,10 @@ export default function ProfileInfo({ username }: { username: string }) {
 
         {/* Avatar Image  */}
         <div className="absolute -top-10">
-          <div className="relative w-20 md:w-24 aspect-square rounded-full overflow-hidden flex items-center justify-center border-2 border-background">
-            <Image
-              src={profile?.avatar?.url ?? "/images/avatar.jpg"}
-              alt="User Avatar"
-              fill
-              className="object-cover rounded-full"
-            />
-          </div>
+          <Avatar
+            src={profile?.avatar?.url}
+            className="w-20! md:w-24! border-2 border-background"
+          />
         </div>
       </div>
     </div>

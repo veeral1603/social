@@ -1,8 +1,8 @@
 "use client";
 
 import { useProfileContext } from "@/src/hooks/useProfileContext";
-import Image from "next/image";
 import React from "react";
+import Avatar from "../../profile/Avatar";
 
 export default function MobileProfileSnapshot() {
   const { profile } = useProfileContext();
@@ -10,14 +10,7 @@ export default function MobileProfileSnapshot() {
 
   return (
     <div className="px-6 py-4 flex flex-col gap-2">
-      <div className="relative w-12 aspect-square rounded-full overflow-hidden flex items-center justify-center ">
-        <Image
-          src={profile?.avatar?.url ?? "/images/avatar.jpg"}
-          alt="User Avatar"
-          fill
-          className="object-cover rounded-full"
-        />
-      </div>
+      <Avatar className="w-12!" src={profile?.avatar?.url} />
 
       <div>
         {profile.name && (
@@ -43,9 +36,3 @@ export default function MobileProfileSnapshot() {
     </div>
   );
 }
-
-//  <Link
-//       href={`/profile/${profile.username}`}
-//       className="block hover:opacity-80 transition duration-200"
-//       onClick={closeMenu}
-//     ></Link>

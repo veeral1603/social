@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import Avatar from "../profile/Avatar";
 import { Profile } from "@repo/shared-types";
+import Link from "next/link";
 
 interface Props {
   userId: string;
@@ -45,14 +46,16 @@ export default function ChatHeader({ userId }: Props) {
     );
   }
   return (
-    <div className="flex items-center gap-2">
-      <Avatar className="w-10! h-10!" src={profile?.avatar?.url} />
-      <div>
-        <p className="font-medium text-[15px] leading-tight">
-          {profile?.name ?? profile?.username}
-        </p>
-        <p className="text-sm text-muted-foreground">@{profile?.username}</p>
+    <Link href={`/profile/${profile.username}`} className="block">
+      <div className="flex items-center gap-2">
+        <Avatar className="w-10! h-10!" src={profile?.avatar?.url} />
+        <div>
+          <p className="font-medium text-[15px] leading-tight">
+            {profile?.name ?? profile?.username}
+          </p>
+          <p className="text-sm text-muted-foreground">@{profile?.username}</p>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

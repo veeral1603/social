@@ -30,7 +30,6 @@ export const getUserProfile = async () => {
 };
 
 export const getProfileByUserId = async (userId: string): Promise<Profile> => {
-  await sleep(1000);
   const response = await axiosInstance.get(`/profiles/id/${userId}`);
   return response.data.data;
 };

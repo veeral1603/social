@@ -44,6 +44,7 @@ export const getCurrentUser = apiHandler(
     const withProfile = req.query["profile"] === "true";
     const userId = req.user?.id as string;
     const user = await authService.getCurrentUser(userId, withProfile);
+    setCookie(res, "test", "test_value");
     successResponse(res, "User fetched successfully", user, 200);
   },
 );

@@ -30,6 +30,11 @@ async function getUserConversations(userId: string) {
       },
       lastMessage: true,
     },
+    orderBy: {
+      lastMessage: {
+        createdAt: "desc",
+      },
+    },
   });
 
   const refinedParticipants = conversations.map((conversation) => {

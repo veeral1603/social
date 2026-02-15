@@ -3,17 +3,26 @@ import { Send, Smile } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { sendMessage } from "@/src/services/message.service";
+import { socket } from "@/src/lib/socket";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
+import { v4 as uuid } from "uuid";
+import { Message } from "@repo/shared-types";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   receiverId: string;
+  conversationId?: string;
 }
 
-export default function ChatInput({ receiverId }: Props) {
+export default function ChatInput({ receiverId, conversationId }: Props) {
   const [input, setInput] = React.useState("");
   const [isMultiLine, setIsMultiLine] = React.useState(false);
-  const [isSending, setIsSending] = React.useState(false);
+  const [isSending, _setIsSending] = React.useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const queryClient = useQueryClient();
+  const {
+    auth: { user },
+  } = useAuthContext();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
@@ -32,24 +41,34 @@ export default function ChatInput({ receiverId }: Props) {
   const onSend = async () => {
     if (!input.trim()) return;
 
-    try {
-      setIsSending(true);
-      const response = await sendMessage(receiverId, input.trim());
-      if (!response.success)
-        throw new Error(response.message || "Failed to send message");
+    const tempId = uuid();
 
-      // On Success
-      setInput("");
-      setIsMultiLine(false);
+    console.log(tempId);
 
-      const textarea = textareaRef.current;
-      if (textarea) {
-        textarea.style.height = "auto";
-      }
-    } catch (error) {
-      toast.error((error as Error).message || "Failed to send message");
-    } finally {
-      setIsSending(false);
+    const optimisticMessage: Message = {
+      id: "temp-" + tempId,
+      conversationId: conversationId ?? "temp",
+      senderId: user?.id as string,
+      content: input.trim(),
+      createdAt: new Date(),
+    };
+
+    queryClient.setQueryData<Message[]>(
+      ["conversation-messages", conversationId],
+      (oldMessages: Message[] = []) => [...oldMessages, optimisticMessage],
+    );
+
+    socket.emit("send_message", {
+      receiverId,
+      content: input.trim(),
+      senderId: user?.id,
+    });
+    setInput("");
+    setIsMultiLine(false);
+
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
     }
   };
 
@@ -74,6 +93,7 @@ export default function ChatInput({ receiverId }: Props) {
         variant="default"
         className="rounded-full! aspect-square! h-8 w-8 p-0 flex items-center justify-center"
         onClick={onSend}
+        disabled={isSending}
       >
         <Send strokeWidth={2.5} />
       </Button>

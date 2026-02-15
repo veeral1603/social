@@ -1,32 +1,54 @@
 "use client";
-import {
-  getConversation,
-  getConversationMessages,
-} from "@/src/services/conversation.service";
-import { useQuery } from "@tanstack/react-query";
+import { getConversationMessages } from "@/src/services/conversation.service";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { Spinner } from "../ui/spinner";
 import { Message as MessageType } from "@repo/shared-types";
 import Message from "./Message";
+import { socket } from "@/src/lib/socket";
 
 interface Props {
-  participantId: string;
+  conversationId?: string;
+  isConversationLoading: boolean;
 }
 
-export default function Chat({ participantId }: Props) {
-  const { data: conversation, isLoading: isConversationLoading } = useQuery({
-    queryKey: ["conversation", participantId],
-    queryFn: () => getConversation(participantId),
-    enabled: !!participantId,
-    refetchOnWindowFocus: false,
-  });
+export default function Chat({ conversationId, isConversationLoading }: Props) {
+  const queryClient = useQueryClient();
+  React.useEffect(() => {
+    socket.on("receive_message", handleNewMessage);
+
+    function handleNewMessage(message: MessageType) {
+      if (!conversationId) {
+      }
+
+      queryClient.setQueryData<MessageType[]>(
+        ["conversation-messages", message.conversationId],
+        (oldMessages) => {
+          if (message.conversationId !== conversationId)
+            return oldMessages || [];
+
+          if (!oldMessages) return [message];
+
+          if (oldMessages.some((m) => m.id === message.id)) return oldMessages;
+
+          const filtered = oldMessages.filter((m) => !m.id.startsWith("temp"));
+
+          return [...filtered, message];
+        },
+      );
+    }
+
+    return () => {
+      socket.off("receive_message", handleNewMessage);
+    };
+  }, [queryClient, conversationId]);
 
   const { data: messages, isLoading: isMessagesLoading } = useQuery<
     MessageType[]
   >({
-    queryKey: ["conversation-messages", conversation?.id],
-    queryFn: () => getConversationMessages(conversation!.id),
-    enabled: !!conversation?.id,
+    queryKey: ["conversation-messages", conversationId],
+    queryFn: () => getConversationMessages(conversationId!),
+    enabled: !!conversationId,
     refetchOnWindowFocus: false,
   });
 

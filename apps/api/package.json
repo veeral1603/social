@@ -28,6 +28,7 @@
   "dependencies": {
     "@prisma/client": "6.19",
     "bcryptjs": "^3.0.3",
+    "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
@@ -36,6 +37,7 @@
     "jose": "^6.1.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.12",
+    "socket.io": "^4.8.3",
     "zod": "^4.3.5"
   }
 }

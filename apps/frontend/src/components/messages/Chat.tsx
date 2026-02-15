@@ -14,6 +14,8 @@ interface Props {
 
 export default function Chat({ conversationId, isConversationLoading }: Props) {
   const queryClient = useQueryClient();
+  const messagesContainerRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     socket.on("receive_message", handleNewMessage);
 
@@ -61,11 +63,23 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
   }
 
   if (!messages || messages.length === 0) {
-    return <div className="flex-1 h-full p-2 md:p-0 overflow-y-auto"></div>;
+    return (
+      <div className="flex-1 h-full p-2 md:p-0 overflow-y-auto chat-scrollbar"></div>
+    );
   }
 
+  React.useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="flex-1 h-full p-2 md:p-0 overflow-y-auto">
+    <div
+      className="flex-1 h-full w-full chat-scrollbar p-3 overflow-y-auto scroll-smooth "
+      ref={messagesContainerRef}
+    >
       {messages.map((message, index) => (
         <Message
           key={message.id}

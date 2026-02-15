@@ -44,7 +44,7 @@ export default function Conversation({ conversation }: Props) {
               @{conversation.otherParticipant?.profile?.username ?? "unknown"}
             </p>
 
-            <p className="text-sm text-muted-foreground truncate line-clamp-1 ">
+            <p className="text-sm text-muted-foreground max-w-50 truncate line-clamp-1 ">
               {lastMessageSender}: {conversation.lastMessage?.content}
             </p>
           </div>

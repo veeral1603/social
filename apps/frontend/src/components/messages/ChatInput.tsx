@@ -24,12 +24,29 @@ export default function ChatInput({ receiverId, conversationId }: Props) {
     auth: { user },
   } = useAuthContext();
 
+  const stopTypingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const isTypingRef = React.useRef(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
       toast.error("Your message is too long");
       return;
     }
     setInput(e.target.value);
+
+    if (!isTypingRef.current) {
+      isTypingRef.current = true;
+      handleStartTyping();
+    }
+
+    if (stopTypingTimeoutRef.current) {
+      clearTimeout(stopTypingTimeoutRef.current);
+    }
+
+    stopTypingTimeoutRef.current = setTimeout(() => {
+      isTypingRef.current = false;
+      handleStopTyping();
+    }, 2000);
 
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
@@ -85,6 +102,22 @@ export default function ChatInput({ receiverId, conversationId }: Props) {
       textarea.style.height = "auto";
     }
   };
+
+  const handleStartTyping = () => {
+    socket.emit("start_typing", { senderId: user?.id, receiverId });
+  };
+
+  const handleStopTyping = () => {
+    socket.emit("stop_typing", { senderId: user?.id, receiverId });
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (stopTypingTimeoutRef.current) {
+        clearTimeout(stopTypingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="absolute bottom-2 inset-x-4">

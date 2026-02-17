@@ -25,7 +25,6 @@ export default function AuthProvider({
         status: "authenticated",
         user: response.data,
       });
-      console.log("loading ended");
     } catch {
       setAuth({ status: "unauthenticated", user: null });
     }

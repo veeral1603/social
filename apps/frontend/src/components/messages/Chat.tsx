@@ -6,6 +6,8 @@ import { Spinner } from "../ui/spinner";
 import { Message as MessageType } from "@repo/shared-types";
 import Message from "./Message";
 import { socket } from "@/src/lib/socket";
+import useIsUserTyping from "@/src/hooks/useIsUserTyping";
+import { cn } from "@/src/lib/utils";
 
 interface Props {
   conversationId?: string;
@@ -123,6 +125,8 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const isTyping = useIsUserTyping();
+
   if (isConversationLoading) {
     return (
       <div className="flex-1 h-full w-full flex items-center justify-center">
@@ -154,6 +158,17 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
           previousMessage={messages[index - 1]}
         />
       ))}
+      {isTyping && (
+        <div className={cn("w-full flex mt-2 justify-start")}>
+          <div
+            className={`px-4 py-2 max-w-[75%] rounded-2xl bg-muted text-foreground text-sm leading-relaxed wrap-break-word shadow-sm }`}
+          >
+            <p className="whitespace-pre-wrap leading-snug animate-pulse">
+              typing...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

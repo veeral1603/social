@@ -13,7 +13,6 @@ export default function LoadingScreen() {
     } else {
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
-      console.log("back to normal");
     }
     return () => {
       document.documentElement.style.overflow = "";

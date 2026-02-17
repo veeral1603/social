@@ -12,7 +12,7 @@ async function getFeed({
     },
     include: {
       author: true,
-      _count: { select: { likes: true } },
+      _count: { select: { likes: true, replies: true } },
       ...(userId && { likes: { where: { userId: userId } } }),
     },
   });
@@ -27,6 +27,7 @@ async function getFeed({
       likedByMe: p.likes ? p.likes.length > 0 : false,
       counts: {
         likes: p._count.likes,
+        replies: p._count.replies,
       },
     };
   });

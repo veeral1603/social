@@ -14,7 +14,7 @@ export default function FollowButton({
 }: {
   profile: Profile;
   setIsFollowing: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setFollowerCount: React.Dispatch<React.SetStateAction<number>>;
+  setFollowerCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const queryClient = useQueryClient();
@@ -26,7 +26,7 @@ export default function FollowButton({
         throw new Error(response.message || "Failed to follow user");
 
       setIsFollowing(true);
-      setFollowerCount((prev) => prev + 1);
+      setFollowerCount?.((prev) => prev + 1);
 
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       toast.success(response.message || "User followed successfully");

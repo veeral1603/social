@@ -1,9 +1,13 @@
 import prisma from "../../lib/prisma";
+import ApiError from "../../utils/apiError";
 
 async function followUser(
   currentUserProfileId: string,
   targetUserProfileId: string,
 ): Promise<void> {
+  if (currentUserProfileId === targetUserProfileId) {
+    throw new ApiError("Cannot follow yourself", 400);
+  }
   const existingFollow = await prisma.follow.findFirst({
     where: {
       followerId: currentUserProfileId,
@@ -11,7 +15,7 @@ async function followUser(
     },
   });
   if (existingFollow) {
-    throw new Error("Already following this user");
+    throw new ApiError("Already following this user", 400);
   }
   await prisma.follow.create({
     data: {
@@ -32,7 +36,7 @@ async function unfollowUser(
     },
   });
   if (!existingFollow) {
-    throw new Error("Not following this user");
+    throw new ApiError("Not following this user", 400);
   }
   await prisma.follow.delete({
     where: {

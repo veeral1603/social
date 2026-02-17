@@ -47,3 +47,27 @@ export function formatCount(count: number) {
     return count.toString();
   }
 }
+export function formatDateTime(date: Date | string) {
+  const d = new Date(date);
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  const ampm = d.getHours() >= 12 ? "PM" : "AM";
+  const displayHours = String(d.getHours() % 12 || 12).padStart(2, "0");
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[d.getMonth()];
+  const day = d.getDate();
+  const year = d.getFullYear();
+  return `${displayHours}:${minutes} ${ampm} · ${month} ${day}, ${year}`;
+}

@@ -1,6 +1,7 @@
 import type { Post } from "@repo/shared-types";
 import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
+import { ObjectId } from "bson";
 
 async function createPost(
   userId: string,
@@ -25,13 +26,17 @@ async function getPostById(
   postId: string,
   userId: string | null | undefined,
 ): Promise<Post | null> {
-  const p = await prisma.post.findUnique({
+  if (!ObjectId.isValid(postId)) {
+    throw new ApiError("Post not found", 404);
+  }
+  const p = await prisma.post.findFirst({
     where: { id: postId },
     include: {
       author: true,
       _count: {
         select: {
           likes: true,
+          replies: true,
         },
       },
       ...(userId && { likes: { where: { userId: userId } } }),
@@ -49,6 +54,7 @@ async function getPostById(
     likedByMe: p.likes ? p.likes.length > 0 : false,
     counts: {
       likes: p._count.likes,
+      replies: p._count.replies,
     },
   };
 
@@ -70,7 +76,7 @@ async function getPostsByUsername(
       posts: {
         include: {
           author: true,
-          _count: { select: { likes: true } },
+          _count: { select: { likes: true, replies: true } },
           ...(userId && { likes: { where: { userId: userId } } }),
         },
         orderBy: { createdAt: "desc" },
@@ -89,6 +95,7 @@ async function getPostsByUsername(
       likedByMe: p.likes ? p.likes.length > 0 : false,
       counts: {
         likes: p._count.likes,
+        replies: p._count.replies,
       },
     };
     return post;
@@ -104,7 +111,7 @@ async function getCurrentUserPosts(
     where: { authorId: profileId },
     include: {
       author: true,
-      _count: { select: { likes: true } },
+      _count: { select: { likes: true, replies: true } },
       likes: { where: { userId: userId } },
     },
     orderBy: { createdAt: "desc" },
@@ -121,6 +128,7 @@ async function getCurrentUserPosts(
       likedByMe: p.likes ? p.likes.length > 0 : false,
       counts: {
         likes: p._count.likes,
+        replies: p._count.replies,
       },
     };
     return post;

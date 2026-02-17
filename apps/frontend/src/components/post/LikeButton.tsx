@@ -10,9 +10,10 @@ import { formatCount } from "@/src/lib/utils";
 
 interface Props {
   post: Post;
+  isDetailed?: boolean;
 }
 
-export default function LikeButton({ post }: Props) {
+export default function LikeButton({ post, isDetailed }: Props) {
   const [likeCount, setLikeCount] = React.useState<number>(
     post.counts?.likes || 0,
   );
@@ -47,12 +48,16 @@ export default function LikeButton({ post }: Props) {
       await likePost(post.id);
     }
   };
+
   return (
     <button
-      className={`flex items-center hover:bg-pink-400/10 text-xs hover:text-pink-700 gap-1 p-1 rounded-full cursor-pointer  transition duration-300 ${isLiked ? "text-pink-700" : "text-muted-foreground"}`}
+      className={`flex items-center hover:bg-pink-400/10  hover:text-pink-700 gap-1 p-1 rounded-full cursor-pointer  transition duration-300 ${isDetailed ? "text-sm md:text-lg" : "text-xs"} ${isLiked ? "text-pink-700" : "text-muted-foreground"}`}
       onClick={toggleLike}
     >
-      <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+      <Heart
+        size={isDetailed ? 20 : 18}
+        fill={isLiked ? "currentColor" : "none"}
+      />
       <span>{formatCount(likeCount)}</span>
     </button>
   );

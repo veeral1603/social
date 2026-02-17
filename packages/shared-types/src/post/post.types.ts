@@ -14,6 +14,7 @@ export type Post = {
 
   counts?: {
     likes: number;
+    replies: number;
   };
 
   likedByMe?: boolean;

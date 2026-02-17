@@ -61,13 +61,23 @@ model Profile {
 }
 
 model Post {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  authorId  String   @db.ObjectId
-  author    Profile  @relation(fields: [authorId], references: [id])
-  content   String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  authorId String  @db.ObjectId
+  author   Profile @relation(fields: [authorId], references: [id])
+
+  content String
+
+  parentId String? @db.ObjectId
+  parant   Post?   @relation("PostReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies  Post[]  @relation("PostReplies")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  likes     Like[]
+
+  likes Like[]
+
+  @@index([authorId])
 }
 
 model Follow {

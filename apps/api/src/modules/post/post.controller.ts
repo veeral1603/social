@@ -14,22 +14,31 @@ const createPost = apiHandler(async (req: Request, res: Response) => {
 
 const getPostById = apiHandler(async (req: Request, res: Response) => {
   const postId = req.params["id"];
+  const userId = req.user?.id;
   if (!postId) throw new ApiError("Post ID is required", 400);
-  const post = await postService.getPostById(postId as string);
+  const post = await postService.getPostById(postId as string, userId);
   successResponse(res, "Post retrieved successfully", post, 200);
 });
 
 const getPostsByUsername = apiHandler(async (req: Request, res: Response) => {
   const username = req.params["username"];
+  const userId = req.user?.id;
   if (!username) throw new ApiError("Username is required", 400);
-  const posts = await postService.getPostsByUsername(username as string);
+  const posts = await postService.getPostsByUsername(
+    username as string,
+    userId,
+  );
   successResponse(res, "Posts retrieved successfully", posts, 200);
 });
 
 const getCurrentUserPosts = apiHandler(async (req: Request, res: Response) => {
   const profileId = req.user?.profileId;
+  const userId = req.user?.id;
   if (!profileId) throw new ApiError("Profile ID is required", 400);
-  const posts = await postService.getCurrentUserPosts(profileId as string);
+  const posts = await postService.getCurrentUserPosts(
+    profileId as string,
+    userId as string,
+  );
   successResponse(res, "Current user posts retrieved successfully", posts, 200);
 });
 

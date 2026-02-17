@@ -37,3 +37,13 @@ export function formatTime(date: Date | string) {
   const displayHours = String(d.getHours() % 12 || 12).padStart(2, "0");
   return `${displayHours}:${minutes} ${ampm}`;
 }
+
+export function formatCount(count: number) {
+  if (count >= 1_000_000) {
+    return (count / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  } else if (count >= 1_000) {
+    return (count / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+  } else {
+    return count.toString();
+  }
+}

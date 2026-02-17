@@ -21,12 +21,37 @@ async function createPost(
   return post;
 }
 
-async function getPostById(postId: string): Promise<Post | null> {
-  const post = await prisma.post.findUnique({
+async function getPostById(
+  postId: string,
+  userId: string | null | undefined,
+): Promise<Post | null> {
+  const p = await prisma.post.findUnique({
     where: { id: postId },
-    include: { author: true },
+    include: {
+      author: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+      ...(userId && { likes: { where: { userId: userId } } }),
+    },
   });
-  if (!post) throw new ApiError("Post not found", 404);
+  if (!p) throw new ApiError("Post not found", 404);
+
+  const post: Post = {
+    id: p.id,
+    content: p.content,
+    authorId: p.authorId,
+    author: p.author ?? undefined,
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+    likedByMe: p.likes ? p.likes.length > 0 : false,
+    counts: {
+      likes: p._count.likes,
+    },
+  };
+
   return post;
 }
 
@@ -34,24 +59,73 @@ async function deletePost(postId: string): Promise<void> {
   await prisma.post.delete({ where: { id: postId } });
 }
 
-async function getPostsByUsername(username: string): Promise<Post[]> {
+async function getPostsByUsername(
+  username: string,
+  userId: string | null | undefined,
+): Promise<Post[]> {
   const normalizedUsername = username.trim().toLowerCase();
   const profile = await prisma.profile.findUnique({
     where: { username: normalizedUsername },
     include: {
-      posts: { include: { author: true }, orderBy: { createdAt: "desc" } },
+      posts: {
+        include: {
+          author: true,
+          _count: { select: { likes: true } },
+          ...(userId && { likes: { where: { userId: userId } } }),
+        },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
   if (!profile) throw new ApiError("Profile not found", 404);
-  return profile.posts;
+  const posts: Post[] = profile.posts.map((p) => {
+    const post: Post = {
+      id: p.id,
+      content: p.content,
+      authorId: p.authorId,
+      author: p.author ?? undefined,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      likedByMe: p.likes ? p.likes.length > 0 : false,
+      counts: {
+        likes: p._count.likes,
+      },
+    };
+    return post;
+  });
+  return posts;
 }
 
-async function getCurrentUserPosts(profileId: string): Promise<Post[]> {
-  const posts = await prisma.post.findMany({
+async function getCurrentUserPosts(
+  profileId: string,
+  userId: string,
+): Promise<Post[]> {
+  const p = await prisma.post.findMany({
     where: { authorId: profileId },
-    include: { author: true },
+    include: {
+      author: true,
+      _count: { select: { likes: true } },
+      likes: { where: { userId: userId } },
+    },
     orderBy: { createdAt: "desc" },
   });
+
+  const posts: Post[] = p.map((p) => {
+    const post: Post = {
+      id: p.id,
+      content: p.content,
+      authorId: p.authorId,
+      author: p.author ?? undefined,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      likedByMe: p.likes ? p.likes.length > 0 : false,
+      counts: {
+        likes: p._count.likes,
+      },
+    };
+    return post;
+  });
+
   return posts;
 }
 

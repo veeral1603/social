@@ -44,7 +44,7 @@ export default function Post({ post }: Props) {
         <div className="-mt-1">
           <p className="mt-1 whitespace-pre-wrap leading-5">{post.content}</p>
         </div>
-        <PostActions />
+        <PostActions post={post} />
       </div>
     </div>
   );

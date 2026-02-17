@@ -1,12 +1,51 @@
 "use client";
 import React from "react";
 import { Heart } from "lucide-react";
+import { likePost, unlikePost } from "@/src/services/like.service";
+import { Post } from "@repo/shared-types";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
+import { toast } from "sonner";
+import useAuthModal from "@/src/stores/authModalStore";
+import { formatCount } from "@/src/lib/utils";
 
-export default function LikeButton() {
-  const [isLiked, setIsLiked] = React.useState(false);
+interface Props {
+  post: Post;
+}
 
-  const toggleLike = () => {
+export default function LikeButton({ post }: Props) {
+  const [likeCount, setLikeCount] = React.useState<number>(
+    post.counts?.likes || 0,
+  );
+  const [isLiked, setIsLiked] = React.useState<boolean>(
+    post.likedByMe || false,
+  );
+
+  const {
+    auth: { status },
+  } = useAuthContext();
+  const { open } = useAuthModal();
+
+  const toggleLike = async () => {
+    if (status !== "authenticated") {
+      toast.error("You need to be logged in to like posts.");
+      open("welcome");
+      return;
+    }
     setIsLiked((prev) => !prev);
+    setLikeCount((prev) => {
+      if (isLiked) {
+        if (prev === 0) return 0;
+        return prev - 1;
+      } else {
+        return prev + 1;
+      }
+    });
+
+    if (isLiked) {
+      await unlikePost(post.id);
+    } else {
+      await likePost(post.id);
+    }
   };
   return (
     <button
@@ -14,7 +53,7 @@ export default function LikeButton() {
       onClick={toggleLike}
     >
       <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
-      <span>0</span>
+      <span>{formatCount(likeCount)}</span>
     </button>
   );
 }

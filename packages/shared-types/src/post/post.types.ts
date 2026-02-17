@@ -11,6 +11,12 @@ export type Post = {
   createdAt: Date;
   updatedAt: Date;
   author?: Profile;
+
+  counts?: {
+    likes: number;
+  };
+
+  likedByMe?: boolean;
 };
 
 export type EditPostData = z.infer<typeof editPostSchema>;

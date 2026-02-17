@@ -4,7 +4,8 @@ import feedService from "./feed.service";
 import { successResponse } from "../../utils/apiResponses";
 
 const getFeed = apiHandler(async (req: Request, res: Response) => {
-  const feedPosts = await feedService.getFeed();
+  const userId = req?.user?.id;
+  const feedPosts = await feedService.getFeed({ userId });
   successResponse(res, "Feed retrieved successfully", feedPosts);
 });
 

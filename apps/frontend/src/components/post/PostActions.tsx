@@ -4,14 +4,19 @@ import ReplyButton from "./ReplyButton";
 import RepostButton from "./RepostButton";
 import SaveButton from "./SaveButton";
 import ShareButton from "./ShareButton";
+import { Post } from "@repo/shared-types";
 
-export default function PostActions() {
+interface Props {
+  post: Post;
+}
+
+export default function PostActions({ post }: Props) {
   return (
     <div className="flex items-center gap-2 justify-between text-muted-foreground mt-2 ">
       <div className="flex max-w-[60%] items-center w-full  justify-between gap-4 ">
         <ReplyButton />
         <RepostButton />
-        <LikeButton />
+        <LikeButton post={post} />
       </div>
 
       <div className="flex  items-center w-max  gap-1 ">

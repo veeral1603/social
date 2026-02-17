@@ -17,6 +17,7 @@ async function getProfileByUserId(userId: string): Promise<Profile> {
         select: {
           followers: true,
           following: true,
+          posts: true,
         },
       },
     },
@@ -35,6 +36,7 @@ async function getProfileByUserId(userId: string): Promise<Profile> {
     banner: p.banner,
     followersCount: p._count.followers,
     followingCount: p._count.following,
+    postsCount: p._count.posts,
   };
   return profile;
 }
@@ -50,6 +52,7 @@ async function getProfileByUsername(
         select: {
           followers: true,
           following: true,
+          posts: true,
         },
       },
     },
@@ -90,6 +93,7 @@ async function getProfileByUsername(
     banner: p.banner,
     followersCount: p._count.followers,
     followingCount: p._count.following,
+    postsCount: p._count.posts,
     isFollowing,
     isFollower,
   };

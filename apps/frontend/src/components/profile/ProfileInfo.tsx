@@ -118,7 +118,10 @@ export default function ProfileInfo({ username }: { username: string }) {
             </p>
 
             <p>
-              <span className="text-foreground font-semibold">0</span> posts
+              <span className="text-foreground font-semibold">
+                {profile?.postsCount ?? 0}
+              </span>{" "}
+              posts
             </p>
           </div>
 

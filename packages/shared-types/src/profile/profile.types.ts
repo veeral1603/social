@@ -16,6 +16,7 @@ export type Profile = {
 
   followersCount?: number;
   followingCount?: number;
+  postsCount?: number;
   isFollowing?: boolean;
   isFollower?: boolean;
 };

@@ -11,11 +11,11 @@ interface Props {
 
 export default function Post({ post }: Props) {
   return (
-    <div className="px-4 py-2 flex items-start gap-4 cursor-pointer hover:bg-muted/60 transition duration-300 border-b border-border">
+    <div className="px-4 py-2 flex items-start gap-3 cursor-pointer hover:bg-muted/60 transition duration-300 border-b border-border">
       <Link href={`/profile/${post.author?.username}`} className="shrink-0">
         <Avatar src={post.author?.avatar?.url} className="w-10! md:w-12!" />
       </Link>
-      <div>
+      <div className="w-full">
         <div className="flex items-center gap-1">
           {/* Name  */}
           <Link
@@ -41,7 +41,7 @@ export default function Post({ post }: Props) {
             {formatTimeAgo(post.createdAt)}
           </span>
         </div>
-        <div>
+        <div className="-mt-1">
           <p className="mt-1 whitespace-pre-wrap leading-5">{post.content}</p>
         </div>
         <PostActions />

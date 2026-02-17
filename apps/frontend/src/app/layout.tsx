@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark custom-scrollbar">
       <body className={`${montserrat.variable} antialiased`}>
         <AppProviders>
           <Toaster position="bottom-center" />

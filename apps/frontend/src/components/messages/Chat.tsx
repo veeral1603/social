@@ -8,6 +8,8 @@ import Message from "./Message";
 import { socket } from "@/src/lib/socket";
 import useIsUserTyping from "@/src/hooks/useIsUserTyping";
 import { cn } from "@/src/lib/utils";
+import useMessageAudio from "@/src/hooks/useMessageAudio";
+import { useAuthContext } from "@/src/hooks/useAuthContext";
 
 interface Props {
   conversationId?: string;
@@ -17,6 +19,11 @@ interface Props {
 export default function Chat({ conversationId, isConversationLoading }: Props) {
   const queryClient = useQueryClient();
   const messagesContainerRef = React.useRef<HTMLDivElement>(null);
+  const {
+    auth: { user },
+  } = useAuthContext();
+  const isTyping = useIsUserTyping();
+  const { playMessageSound } = useMessageAudio();
 
   const { data, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -39,8 +46,7 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
     socket.on("receive_message", handleNewMessage);
 
     function handleNewMessage(message: MessageType) {
-      if (!conversationId) {
-      }
+      if (message.senderId !== user?.id) playMessageSound();
 
       queryClient.setQueryData<{
         messages: MessageType[];
@@ -107,7 +113,7 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
       if (chatContainer.scrollTop <= 20) {
         if (hasNextPage && !isFetchingNextPage) {
           const prevHeight = chatContainer.scrollHeight;
-          console.log("Fetching next page...");
+
           await fetchNextPage();
 
           requestAnimationFrame(() => {
@@ -125,8 +131,6 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const isTyping = useIsUserTyping();
-
   if (isConversationLoading) {
     return (
       <div className="flex-1 h-full w-full flex items-center justify-center">
@@ -143,7 +147,7 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
 
   return (
     <div
-      className="flex-1 h-full w-full chat-scrollbar p-3 pb-16! overflow-y-auto "
+      className="flex-1 h-full w-full custom-scrollbar p-3 pb-16! overflow-y-auto  "
       ref={messagesContainerRef}
     >
       {isFetching && (

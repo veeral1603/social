@@ -18,10 +18,13 @@ export const getConversation = async (participantId: string) => {
   }
 };
 
-export const getConversationMessages = async (conversationId: string) => {
+export const getConversationMessages = async (
+  conversationId: string,
+  cursor?: string | undefined,
+) => {
   try {
     const response = await axiosInstance.get(
-      `/conversations/${conversationId}/messages`,
+      `/conversations/${conversationId}/messages?${cursor ? `cursor=${cursor}` : ""}`,
     );
     return response.data.data;
   } catch (err) {

@@ -13,25 +13,6 @@ const getUserConversations = apiHandler(async (req: Request, res: Response) => {
   successResponse(res, "Conversations retrieved successfully", conversations);
 });
 
-// const findOrCreateConversation = apiHandler(
-//   async (req: Request, res: Response) => {
-//     const userId = req.user?.id;
-//     const { participantId } =
-//       req.validatedBody as FindOrCreateConversationInput;
-
-//     if (!participantId) {
-//       throw new ApiError("Participant ID is required", 400);
-//     }
-
-//     const conversation = await conversationService.findOrCreateConversation(
-//       userId as string,
-//       participantId as string,
-//     );
-
-//     successResponse(res, "Conversation retrieved successfully", conversation);
-//   },
-// );
-
 const getConversation = apiHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const { participantId } = req.params;
@@ -51,14 +32,18 @@ const getConversation = apiHandler(async (req: Request, res: Response) => {
 const getConversationMessages = apiHandler(
   async (req: Request, res: Response) => {
     const { conversationId } = req.params;
+    const cursor = req.query["cursor"] as string | undefined;
+
     if (!conversationId) {
       throw new ApiError("Conversation ID is required", 400);
     }
-    const messages = await conversationService.getConversationMessages(
-      conversationId as string,
-    );
+    const messagesWithCursor =
+      await conversationService.getConversationMessages(
+        conversationId as string,
+        cursor,
+      );
 
-    successResponse(res, "Messages retrieved successfully", messages);
+    successResponse(res, "Messages retrieved successfully", messagesWithCursor);
   },
 );
 

@@ -1,6 +1,6 @@
 "use client";
 import { getConversationMessages } from "@/src/services/conversation.service";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { Spinner } from "../ui/spinner";
 import { Message as MessageType } from "@repo/shared-types";
@@ -16,6 +16,23 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
   const queryClient = useQueryClient();
   const messagesContainerRef = React.useRef<HTMLDivElement>(null);
 
+  const { data, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["conversation-messages", conversationId],
+      queryFn: ({ pageParam }) =>
+        getConversationMessages(conversationId as string, pageParam),
+      initialPageParam: undefined,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      enabled: !!conversationId,
+      refetchOnWindowFocus: false,
+    });
+
+  const messages =
+    data?.pages
+      .slice()
+      .reverse()
+      .flatMap((page) => page.messages) ?? [];
+
   React.useEffect(() => {
     socket.on("receive_message", handleNewMessage);
 
@@ -23,21 +40,47 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
       if (!conversationId) {
       }
 
-      queryClient.setQueryData<MessageType[]>(
-        ["conversation-messages", message.conversationId],
-        (oldMessages) => {
-          if (message.conversationId !== conversationId)
-            return oldMessages || [];
+      queryClient.setQueryData<{
+        messages: MessageType[];
+        nextCursor?: string;
+      }>(["conversation-messages", message.conversationId], (oldData: any) => {
+        if (!oldData) {
+          return {
+            pages: [
+              {
+                messages: [message],
+                nextCursor: undefined,
+              },
+            ],
+            pageParams: [undefined],
+          };
+        }
 
-          if (!oldMessages) return [message];
+        const exists = oldData.pages.some((page: any) =>
+          page.messages.some((m: MessageType) => m.id === message.id),
+        );
 
-          if (oldMessages.some((m) => m.id === message.id)) return oldMessages;
+        if (exists) return oldData;
 
-          const filtered = oldMessages.filter((m) => !m.id.startsWith("temp"));
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any, index: number) => {
+            if (index === 0) {
+              const filteredMessages = page.messages.filter(
+                (m: MessageType) =>
+                  !(m.id.startsWith("temp") && m.content === message.content),
+              );
 
-          return [...filtered, message];
-        },
-      );
+              return {
+                ...page,
+                messages: [...filteredMessages, message],
+              };
+            }
+
+            return page;
+          }),
+        };
+      });
     }
 
     return () => {
@@ -45,16 +88,42 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
     };
   }, [queryClient, conversationId]);
 
-  const { data: messages, isLoading: isMessagesLoading } = useQuery<
-    MessageType[]
-  >({
-    queryKey: ["conversation-messages", conversationId],
-    queryFn: () => getConversationMessages(conversationId!),
-    enabled: !!conversationId,
-    refetchOnWindowFocus: false,
-  });
+  React.useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [data]);
 
-  if (isConversationLoading || isMessagesLoading) {
+  React.useEffect(() => {
+    const chatContainer = messagesContainerRef.current;
+    if (!chatContainer) return;
+
+    const handleScroll = async () => {
+      if (!chatContainer) return;
+
+      if (chatContainer.scrollTop <= 20) {
+        if (hasNextPage && !isFetchingNextPage) {
+          const prevHeight = chatContainer.scrollHeight;
+          console.log("Fetching next page...");
+          await fetchNextPage();
+
+          requestAnimationFrame(() => {
+            const newHeight = chatContainer.scrollHeight;
+            chatContainer.scrollTop = newHeight - prevHeight;
+          });
+        }
+      }
+    };
+
+    chatContainer.addEventListener("scroll", handleScroll);
+
+    return () => {
+      chatContainer.removeEventListener("scroll", handleScroll);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isConversationLoading) {
     return (
       <div className="flex-1 h-full w-full flex items-center justify-center">
         <Spinner className="size-6 md:size-7" />
@@ -62,24 +131,22 @@ export default function Chat({ conversationId, isConversationLoading }: Props) {
     );
   }
 
-  if (!messages || messages.length === 0) {
+  if (!data || messages.length === 0) {
     return (
       <div className="flex-1 h-full p-2 md:p-0 overflow-y-auto chat-scrollbar"></div>
     );
   }
 
-  React.useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   return (
     <div
-      className="flex-1 h-full w-full chat-scrollbar p-3 overflow-y-auto scroll-smooth "
+      className="flex-1 h-full w-full chat-scrollbar p-3 pb-16! overflow-y-auto "
       ref={messagesContainerRef}
     >
+      {isFetching && (
+        <div className="p-8 flex items-center justify-center">
+          <Spinner className="size-6" />
+        </div>
+      )}
       {messages.map((message, index) => (
         <Message
           key={message.id}

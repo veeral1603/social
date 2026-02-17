@@ -43,8 +43,6 @@ export default function ChatInput({ receiverId, conversationId }: Props) {
 
     const tempId = uuid();
 
-    console.log(tempId);
-
     const optimisticMessage: Message = {
       id: "temp-" + tempId,
       conversationId: conversationId ?? "temp",
@@ -53,9 +51,25 @@ export default function ChatInput({ receiverId, conversationId }: Props) {
       createdAt: new Date(),
     };
 
-    queryClient.setQueryData<Message[]>(
+    queryClient.setQueryData(
       ["conversation-messages", conversationId],
-      (oldMessages: Message[] = []) => [...oldMessages, optimisticMessage],
+      (oldData: any) => {
+        if (!oldData) {
+          return oldData;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any, index: number) => {
+            if (index === 0) {
+              return {
+                ...page,
+                messages: [...page.messages, optimisticMessage],
+              };
+            }
+          }),
+        };
+      },
     );
 
     socket.emit("send_message", {
@@ -73,30 +87,32 @@ export default function ChatInput({ receiverId, conversationId }: Props) {
   };
 
   return (
-    <div
-      className={`rounded-[24px] border border-border px-2 py-1.5 flex  gap-2 ${isMultiLine ? "items-end" : "items-center"}`}
-    >
-      <button className="text-muted-foreground  rounded-full p-1 cursor-pointer hover:text-primary transition-colors">
-        <Smile strokeWidth={2.5} />
-      </button>
-
-      <textarea
-        className="w-full bg-transparent outline-none flex-1 resize-none max-h-80"
-        placeholder="Type a message..."
-        rows={1}
-        ref={textareaRef}
-        value={input}
-        onChange={handleInputChange}
-      />
-
-      <Button
-        variant="default"
-        className="rounded-full! aspect-square! h-8 w-8 p-0 flex items-center justify-center"
-        onClick={onSend}
-        disabled={isSending}
+    <div className="absolute bottom-2 inset-x-4">
+      <div
+        className={`rounded-[24px] bg-background border border-border px-2 py-1.5 flex  gap-2 ${isMultiLine ? "items-end" : "items-center"}`}
       >
-        <Send strokeWidth={2.5} />
-      </Button>
+        <button className="text-muted-foreground  rounded-full p-1 cursor-pointer hover:text-primary transition-colors">
+          <Smile strokeWidth={2.5} />
+        </button>
+
+        <textarea
+          className="w-full bg-transparent outline-none flex-1 resize-none max-h-80"
+          placeholder="Type a message..."
+          rows={1}
+          ref={textareaRef}
+          value={input}
+          onChange={handleInputChange}
+        />
+
+        <Button
+          variant="default"
+          className="rounded-full! aspect-square! h-8 w-8 p-0 flex items-center justify-center"
+          onClick={onSend}
+          disabled={isSending}
+        >
+          <Send strokeWidth={2.5} />
+        </Button>
+      </div>
     </div>
   );
 }

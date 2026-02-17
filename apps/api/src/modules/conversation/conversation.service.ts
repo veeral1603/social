@@ -1,6 +1,5 @@
 import type { Message } from "@repo/shared-types";
 import prisma from "../../lib/prisma";
-import ApiError from "../../utils/apiError";
 
 async function getUserConversations(userId: string) {
   const conversations = await prisma.conversation.findMany({
@@ -66,7 +65,6 @@ async function getConversation(userId: string, participantId: string) {
         },
       ],
     },
-    include: { messages: { orderBy: { createdAt: "asc" } } },
   });
 
   return conversation;
@@ -118,17 +116,26 @@ async function findOrCreateConversation(userId: string, participantId: string) {
 
 async function getConversationMessages(
   conversationId: string,
-): Promise<Message[]> {
-  const conversation = await prisma.conversation.findUnique({
-    where: { id: conversationId },
-    include: { messages: { orderBy: { createdAt: "asc" } } },
+  cursor?: string,
+  limit: number = 20,
+): Promise<{ messages: Message[]; nextCursor?: string | undefined }> {
+  const messages = await prisma.message.findMany({
+    where: { conversationId },
+    orderBy: { createdAt: "desc" },
+    take: limit + 1,
+    ...(cursor && { cursor: { id: cursor } }),
+    skip: cursor ? 1 : 0,
   });
-  if (!conversation) {
-    throw new ApiError("Conversation not found", 404);
-  }
-  const messages = conversation.messages;
 
-  return messages;
+  let nextCursor: string | undefined = undefined;
+  if (messages.length > limit) {
+    const nextMessage = messages.pop();
+    nextCursor = nextMessage?.id;
+  }
+  return {
+    messages: messages.reverse(),
+    nextCursor,
+  };
 }
 
 export default {

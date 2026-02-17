@@ -51,7 +51,7 @@ export default function ChatPage() {
   }, [userId, user?.id]);
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] w-full flex flex-col ">
+    <div className="h-[calc(100vh-3.5rem)] w-full relative flex flex-col ">
       <Chat
         conversationId={conversation?.id as string}
         isConversationLoading={isConversationLoading}

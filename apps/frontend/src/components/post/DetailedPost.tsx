@@ -1,13 +1,10 @@
 "use client";
 
-import type { Post, Profile } from "@repo/shared-types";
+import type { Post } from "@repo/shared-types";
 import React from "react";
 import PostActions from "./PostActions";
 import Avatar from "../profile/Avatar";
 import Link from "next/link";
-
-import FollowButton from "../profile/FollowButton";
-import { useProfileContext } from "@/src/hooks/useProfileContext";
 import { formatCount, formatDateTime } from "@/src/lib/utils";
 
 interface Props {
@@ -15,18 +12,12 @@ interface Props {
 }
 
 export default function DetailedPost({ post }: Props) {
-  const [_isFollowing, setIsFollowing] = React.useState<boolean | undefined>(
-    post.author?.isFollowing || false,
-  );
-  const { profile } = useProfileContext();
-  const isOwnPost = profile?.id === post.author?.id;
-
   return (
     <div className="p-4 pb-2 transition duration-300 border-b border-border flex flex-col gap-2">
       <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/profile/${post.author?.username}`} className="shrink-0">
-            <Avatar src={post.author?.avatar?.url} className="w-10!" />
+            <Avatar src={post.author?.avatar?.url} className="w-12!" />
           </Link>
 
           <div className="">
@@ -47,12 +38,6 @@ export default function DetailedPost({ post }: Props) {
             </Link>
           </div>
         </div>
-        {!isOwnPost && (
-          <FollowButton
-            profile={post.author as Profile}
-            setIsFollowing={setIsFollowing}
-          />
-        )}
       </div>
 
       <div className="-mt-1">

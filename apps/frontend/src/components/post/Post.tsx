@@ -7,6 +7,7 @@ import Avatar from "../profile/Avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import ProfileHoverCard from "../profile/ProfileHoverCard";
 
 interface Props {
   post: Post;
@@ -35,9 +36,12 @@ export default function Post({ post }: Props) {
       className="px-4 py-2 flex items-start gap-3 cursor-pointer hover:bg-muted/60 transition duration-300 border-b border-border"
       onClick={handleNavigate}
     >
-      <Link href={`/profile/${post.author?.username}`} className="shrink-0">
+      <ProfileHoverCard
+        href={`/profile/${post.author?.username}`}
+        username={post.author?.username || ""}
+      >
         <Avatar src={post.author?.avatar?.url} className="w-10! md:w-12!" />
-      </Link>
+      </ProfileHoverCard>
       <div className="w-full">
         <div className="flex items-center gap-1">
           {/* Name  */}

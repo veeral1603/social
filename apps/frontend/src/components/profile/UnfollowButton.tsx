@@ -14,7 +14,7 @@ export default function UnfollowButton({
 }: {
   profile: Profile;
   setIsFollowing: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setFollowerCount: React.Dispatch<React.SetStateAction<number>>;
+  setFollowerCount?: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const queryClient = useQueryClient();
@@ -25,7 +25,7 @@ export default function UnfollowButton({
       if (!response.success)
         throw new Error(response.message || "Failed to unfollow user");
       setIsFollowing(false);
-      setFollowerCount((prev) => prev - 1);
+      setFollowerCount?.((prev) => prev - 1);
       toast.success(response.message || "User unfollowed successfully");
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     } catch (error) {

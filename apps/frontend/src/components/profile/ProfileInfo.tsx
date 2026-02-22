@@ -11,6 +11,7 @@ import ProfileError from "./ProfileError";
 import ProfileActions from "./ProfileActions";
 import { useProfileContext } from "@/src/hooks/useProfileContext";
 import Avatar from "./Avatar";
+import { formatCount } from "@/src/lib/utils";
 
 export default function ProfileInfo({ username }: { username: string }) {
   const { profile: ownProfile } = useProfileContext();
@@ -106,20 +107,20 @@ export default function ProfileInfo({ username }: { username: string }) {
           <div className="flex items-center gap-3 text-muted-foreground ">
             <p>
               <span className="text-foreground font-semibold">
-                {followerCount}
+                {formatCount(followerCount)}
               </span>{" "}
               followers
             </p>
             <p>
               <span className="text-foreground font-semibold">
-                {profile?.followingCount}
+                {formatCount(profile?.followingCount ?? 0)}
               </span>{" "}
               following{" "}
             </p>
 
             <p>
               <span className="text-foreground font-semibold">
-                {profile?.postsCount ?? 0}
+                {formatCount(profile?.postsCount ?? 0)}
               </span>{" "}
               posts
             </p>

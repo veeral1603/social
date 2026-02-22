@@ -15,6 +15,10 @@ export default function ProfileProvider({
     queryKey: ["user-profile"],
     queryFn: getUserProfile,
     staleTime: 100000000,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404) return false;
+      return failureCount < 2;
+    },
   });
 
   const refreshProfile = async () => {

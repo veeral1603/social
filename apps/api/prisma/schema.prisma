@@ -69,7 +69,7 @@ model Post {
   content String
 
   parentId String? @db.ObjectId
-  parant   Post?   @relation("PostReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent   Post?   @relation("PostReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   replies  Post[]  @relation("PostReplies")
 
   createdAt DateTime @default(now())

@@ -6,9 +6,9 @@ import { successResponse } from "../../utils/apiResponses";
 import ApiError from "../../utils/apiError";
 
 const createPost = apiHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const profileId = req.user?.profileId;
   const { content } = req.validatedBody as PostFormData;
-  const post = await postService.createPost(userId as string, content);
+  const post = await postService.createPost(profileId as string, content);
   successResponse(res, "Post created successfully", post, 201);
 });
 
@@ -51,15 +51,36 @@ const deletePost = apiHandler(async (req: Request, res: Response) => {
 
 const editPost = apiHandler(async (req: Request, res: Response) => {
   const postId = req.params["id"];
-  const userId = req.user?.id;
+  const profileId = req.user?.id;
   if (!postId) throw new ApiError("Post ID is required", 400);
   const { content } = req.validatedBody as EditPostData;
   const post = await postService.editPost(
-    userId as string,
+    profileId as string,
     postId as string,
     content,
   );
   successResponse(res, "Post edited successfully", post, 200);
+});
+
+const getPostReplies = apiHandler(async (req: Request, res: Response) => {
+  const postId = req.params["id"];
+  const userId = req.user?.id;
+  if (!postId) throw new ApiError("Post ID is required", 400);
+  const replies = await postService.getPostReplies(postId as string, userId);
+  successResponse(res, "Post replies retrieved successfully", replies, 200);
+});
+
+const createReply = apiHandler(async (req: Request, res: Response) => {
+  const postId = req.params["id"];
+  const profileId = req.user?.profileId;
+  if (!postId) throw new ApiError("Post ID is required", 400);
+  const { content } = req.validatedBody as PostFormData;
+  const reply = await postService.createReply(
+    postId as string,
+    profileId as string,
+    content,
+  );
+  successResponse(res, "Reply created successfully", reply, 201);
 });
 
 export default {
@@ -69,4 +90,6 @@ export default {
   getCurrentUserPosts,
   deletePost,
   editPost,
+  getPostReplies,
+  createReply,
 };

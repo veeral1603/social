@@ -18,6 +18,9 @@ export type Post = {
   };
 
   likedByMe?: boolean;
+
+  parentId?: string;
+  parent?: Post;
 };
 
 export type EditPostData = z.infer<typeof editPostSchema>;

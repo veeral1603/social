@@ -7,6 +7,7 @@ async function getFeed({
   userId: string | null | undefined;
 }): Promise<Post[]> {
   const feedPosts = await prisma.post.findMany({
+    where: { parentId: null },
     orderBy: {
       createdAt: "desc",
     },
@@ -16,6 +17,7 @@ async function getFeed({
       ...(userId && { likes: { where: { userId: userId } } }),
     },
   });
+
   const posts: Post[] = feedPosts.map((p) => {
     return {
       id: p.id,
@@ -29,6 +31,7 @@ async function getFeed({
         likes: p._count.likes,
         replies: p._count.replies,
       },
+      parentId: p.parentId,
     };
   });
 

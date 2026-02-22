@@ -17,7 +17,7 @@ export default function PostActions({ post, isDetailed }: Props) {
       className={`flex items-center gap-2 justify-between text-muted-foreground ${!isDetailed ? "mt-2" : ""}`}
     >
       <div className="flex max-w-[50%] items-center w-full  justify-between gap-4 ">
-        <ReplyButton isDetailed={isDetailed as boolean} />
+        <ReplyButton isDetailed={isDetailed as boolean} post={post} />
         <RepostButton isDetailed={isDetailed as boolean} />
         <LikeButton post={post} isDetailed={isDetailed as boolean} />
       </div>

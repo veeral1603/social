@@ -22,6 +22,7 @@ export default function HomepageFeed() {
       return failureCount < 2;
     },
   });
+
   const queryClient = useQueryClient();
 
   if (isLoading) {

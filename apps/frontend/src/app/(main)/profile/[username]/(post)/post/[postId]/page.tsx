@@ -5,13 +5,28 @@ import { Spinner } from "@/src/components/ui/spinner";
 import { getPostById } from "@/src/services/post.service";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React from "react";
 import DetailedPost from "@/src/components/post/DetailedPost";
 import PostReplyCard from "@/src/components/post/PostReplyCard";
+import PostReplies from "@/src/components/post/PostReplies";
+import PostReplyDialog from "@/src/components/post/PostReplyDialog";
+import usePostReplyDialog from "@/src/stores/postReplyDialogStore";
 
 export default function PostPage() {
   const { postId } = useParams();
+  const searchParams = useSearchParams();
+  const reply = searchParams.get("reply");
+
+  const { openDialog, closeDialog } = usePostReplyDialog();
+
+  React.useEffect(() => {
+    if (Boolean(reply) === true) {
+      openDialog();
+    } else {
+      closeDialog();
+    }
+  }, [reply, openDialog, closeDialog]);
 
   const {
     data: post,
@@ -50,7 +65,9 @@ export default function PostPage() {
   return (
     <div>
       <DetailedPost post={post} />
+      <PostReplyDialog post={post} />
       <PostReplyCard profile={post?.author} />
+      <PostReplies postId={post?.id as string} />
     </div>
   );
 }

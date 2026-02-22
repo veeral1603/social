@@ -1,6 +1,7 @@
 import { PostFormData } from "@repo/shared-types";
 import axiosInstance from "../lib/axios";
 import { AxiosError } from "axios";
+import { sleep } from "../lib/utils";
 
 export const createPost = async (data: PostFormData) => {
   try {
@@ -35,4 +36,20 @@ export const getCurrentUserPosts = async () => {
 export const getPostsByUsername = async (username: string) => {
   const response = await axiosInstance.get(`/posts/user/@${username}`);
   return response.data.data;
+};
+
+export const getPostReplies = async (postId: string) => {
+  sleep(1000); // Simulate network delay
+  const response = await axiosInstance.get(`/posts/${postId}/replies`);
+  return response.data.data;
+};
+
+export const createReply = async (postId: string, data: PostFormData) => {
+  try {
+    const response = await axiosInstance.post(`/posts/${postId}/reply`, data);
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data.message || "Failed to create reply.");
+  }
 };

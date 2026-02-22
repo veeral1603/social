@@ -7,6 +7,12 @@ import optionalAuth from "../../middlewares/optionalAuth";
 const router = Router();
 
 router.post("/", requireAuth, validate(postSchema), postController.createPost);
+router.post(
+  "/:id/reply",
+  requireAuth,
+  validate(postSchema),
+  postController.createReply,
+);
 router.delete("/:id", requireAuth, postController.deletePost);
 router.put(
   "/:id",
@@ -17,5 +23,7 @@ router.put(
 router.get("/:id", optionalAuth, postController.getPostById);
 router.get("/me", requireAuth, postController.getCurrentUserPosts);
 router.get("/user/@:username", optionalAuth, postController.getPostsByUsername);
+
+router.get("/:id/replies", optionalAuth, postController.getPostReplies);
 
 export default router;

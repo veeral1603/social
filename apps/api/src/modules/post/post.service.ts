@@ -4,18 +4,14 @@ import ApiError from "../../utils/apiError";
 import { ObjectId } from "bson";
 
 async function createPost(
-  userId: string,
+  profileId: string,
   content: string,
 ): Promise<Post | null> {
-  const profile = await prisma.profile.findUnique({
-    where: { userId: userId },
-  });
-  if (!profile) throw new ApiError("Profile not found", 404);
-
   const post = await prisma.post.create({
     data: {
-      authorId: profile.id,
+      authorId: profileId,
       content: content,
+      parentId: null,
     },
   });
 
@@ -74,6 +70,7 @@ async function getPostsByUsername(
     where: { username: normalizedUsername },
     include: {
       posts: {
+        where: { parentId: null },
         include: {
           author: true,
           _count: { select: { likes: true, replies: true } },
@@ -108,7 +105,7 @@ async function getCurrentUserPosts(
   userId: string,
 ): Promise<Post[]> {
   const p = await prisma.post.findMany({
-    where: { authorId: profileId },
+    where: { authorId: profileId, parentId: null },
     include: {
       author: true,
       _count: { select: { likes: true, replies: true } },
@@ -138,18 +135,71 @@ async function getCurrentUserPosts(
 }
 
 async function editPost(
-  userId: string,
+  profileId: string,
   postId: string,
   content: string,
 ): Promise<Post | null> {
-  const post = await prisma.post.update({
-    where: { id: postId, authorId: userId },
-    data: { content },
-  });
-  if (post.authorId !== userId) {
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) {
+    throw new ApiError("Post not found", 404);
+  }
+  if (post.authorId !== profileId) {
     throw new ApiError("Unauthorized to edit this post", 403);
   }
+
+  await prisma.post.update({
+    where: { id: postId, authorId: profileId },
+    data: { content },
+  });
   return post;
+}
+
+async function createReply(
+  postId: string,
+  profileId: string,
+  content: string,
+): Promise<Post> {
+  const reply = await prisma.post.create({
+    data: {
+      content,
+      authorId: profileId,
+      parentId: postId,
+    },
+  });
+  return reply;
+}
+async function getPostReplies(
+  postId: string,
+  userId: string | null | undefined,
+): Promise<Post[]> {
+  const r = await prisma.post.findMany({
+    where: { parentId: postId },
+    include: {
+      author: true,
+      _count: { select: { likes: true, replies: true } },
+      ...(userId && { likes: { where: { userId: userId } } }),
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const replies: Post[] = r.map((re) => {
+    const reply: Post = {
+      id: re.id,
+      content: re.content,
+      authorId: re.authorId,
+      author: re.author ?? undefined,
+      createdAt: re.createdAt,
+      updatedAt: re.updatedAt,
+      likedByMe: re.likes ? re.likes.length > 0 : false,
+      counts: {
+        likes: re._count.likes,
+        replies: re._count.replies,
+      },
+    };
+    return reply;
+  });
+
+  return replies;
 }
 
 export default {
@@ -159,4 +209,6 @@ export default {
   getPostsByUsername,
   deletePost,
   editPost,
+  getPostReplies,
+  createReply,
 };

@@ -77,13 +77,7 @@ export default function ProfileHoverCard({ children, href, username }: Props) {
               </Link>
             </div>
 
-            <div>
-              <p className="leading-tight text-sm whitespace-pre-wrap line-clamp-4">
-                {profile?.bio}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 text-muted-foreground mt-1 ">
+            <div className="flex items-center gap-3 text-muted-foreground ">
               <p>
                 <span className="text-foreground font-semibold">
                   {formatCount(profile?.followersCount ?? 0)}
@@ -95,6 +89,12 @@ export default function ProfileHoverCard({ children, href, username }: Props) {
                   {formatCount(profile?.followingCount ?? 0)}
                 </span>{" "}
                 following{" "}
+              </p>
+            </div>
+
+            <div>
+              <p className="leading-tight text-sm whitespace-pre-wrap line-clamp-4">
+                {profile?.bio}
               </p>
             </div>
           </div>

@@ -9,6 +9,7 @@ import conversationRoutes from "../modules/conversation/conversation.route";
 import userRoutes from "../modules/user/user.route";
 import messageRoutes from "../modules/message/message.route";
 import likeRoutes from "../modules/like/like.route";
+import saveRoutes from "../modules/save/save.route";
 
 const router = Router();
 
@@ -21,4 +22,5 @@ router.use("/feed", feedRoutes);
 router.use("/conversations", requireAuth, conversationRoutes);
 router.use("/users", userRoutes);
 router.use("/messages", requireAuth, messageRoutes);
+router.use("/saves", requireAuth, saveRoutes);
 export default router;

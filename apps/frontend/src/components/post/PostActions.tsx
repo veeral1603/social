@@ -2,7 +2,7 @@ import React from "react";
 import LikeButton from "./LikeButton";
 import ReplyButton from "./ReplyButton";
 import RepostButton from "./RepostButton";
-import SaveButton from "./SaveButton";
+import BookmarkButton from "./SaveButton";
 import ShareButton from "./ShareButton";
 import { Post } from "@repo/shared-types";
 
@@ -23,7 +23,7 @@ export default function PostActions({ post, isDetailed }: Props) {
       </div>
 
       <div className="flex  items-center w-max  gap-1 ">
-        <SaveButton isDetailed={isDetailed as boolean} />
+        <BookmarkButton isDetailed={isDetailed as boolean} post={post} />
         <ShareButton isDetailed={isDetailed as boolean} />
       </div>
     </div>

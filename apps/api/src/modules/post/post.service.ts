@@ -33,9 +33,13 @@ async function getPostById(
         select: {
           likes: true,
           replies: true,
+          saves: true,
         },
       },
-      ...(userId && { likes: { where: { userId: userId } } }),
+      ...(userId && {
+        likes: { where: { userId: userId } },
+        saves: { where: { userId: userId } },
+      }),
     },
   });
   if (!p) throw new ApiError("Post not found", 404);
@@ -51,7 +55,9 @@ async function getPostById(
     counts: {
       likes: p._count.likes,
       replies: p._count.replies,
+      saves: p._count.saves,
     },
+    savedByMe: p.saves ? p.saves.length > 0 : false,
   };
 
   return post;
@@ -73,8 +79,11 @@ async function getPostsByUsername(
         where: { parentId: null },
         include: {
           author: true,
-          _count: { select: { likes: true, replies: true } },
-          ...(userId && { likes: { where: { userId: userId } } }),
+          _count: { select: { likes: true, replies: true, saves: true } },
+          ...(userId && {
+            likes: { where: { userId: userId } },
+            saves: { where: { userId: userId } },
+          }),
         },
         orderBy: { createdAt: "desc" },
       },
@@ -93,7 +102,9 @@ async function getPostsByUsername(
       counts: {
         likes: p._count.likes,
         replies: p._count.replies,
+        saves: p._count.saves,
       },
+      savedByMe: p.saves ? p.saves.length > 0 : false,
     };
     return post;
   });
@@ -108,8 +119,9 @@ async function getCurrentUserPosts(
     where: { authorId: profileId, parentId: null },
     include: {
       author: true,
-      _count: { select: { likes: true, replies: true } },
+      _count: { select: { likes: true, replies: true, saves: true } },
       likes: { where: { userId: userId } },
+      saves: { where: { userId: userId } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -123,9 +135,11 @@ async function getCurrentUserPosts(
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
       likedByMe: p.likes ? p.likes.length > 0 : false,
+      savedByMe: p.saves ? p.saves.length > 0 : false,
       counts: {
         likes: p._count.likes,
         replies: p._count.replies,
+        saves: p._count.saves,
       },
     };
     return post;
@@ -176,8 +190,11 @@ async function getPostReplies(
     where: { parentId: postId },
     include: {
       author: true,
-      _count: { select: { likes: true, replies: true } },
-      ...(userId && { likes: { where: { userId: userId } } }),
+      _count: { select: { likes: true, replies: true, saves: true } },
+      ...(userId && {
+        likes: { where: { userId: userId } },
+        saves: { where: { userId: userId } },
+      }),
     },
     orderBy: { createdAt: "desc" },
   });
@@ -194,7 +211,9 @@ async function getPostReplies(
       counts: {
         likes: re._count.likes,
         replies: re._count.replies,
+        saves: re._count.saves,
       },
+      savedByMe: re.saves ? re.saves.length > 0 : false,
     };
     return reply;
   });

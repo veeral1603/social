@@ -13,3 +13,5 @@ export * from "./conversation/conversation.schema";
 
 export * from "./message/message.types";
 export * from "./message/message.schema";
+
+export * from "./save/save.types";

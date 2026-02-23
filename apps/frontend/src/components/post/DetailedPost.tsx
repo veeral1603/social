@@ -64,7 +64,9 @@ export default function DetailedPost({ post }: Props) {
           <p>likes</p>
         </div>
         <div className="gap-1 flex items-center ">
-          <span className="text-foreground font-semibold">358</span>
+          <span className="text-foreground font-semibold">
+            {formatCount(post.counts?.saves as number)}
+          </span>
           <p>saves</p>
         </div>
       </div>

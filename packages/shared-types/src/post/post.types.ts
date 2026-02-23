@@ -15,11 +15,13 @@ export type Post = {
   counts?: {
     likes: number;
     replies: number;
+    saves: number;
   };
 
   likedByMe?: boolean;
+  savedByMe?: boolean;
 
-  parentId?: string;
+  parentId?: string | null;
   parent?: Post;
 };
 

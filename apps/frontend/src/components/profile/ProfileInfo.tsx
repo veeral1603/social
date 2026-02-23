@@ -78,7 +78,7 @@ export default function ProfileInfo({ username }: { username: string }) {
         )}
       </div>
 
-      <div className="p-3 md:p-4 relative border-b border-border">
+      <div className="p-3 md:p-4 relative ">
         <div className="flex items-center justify-end">
           <ProfileActions
             isOwnProfile={isOwnProfile}

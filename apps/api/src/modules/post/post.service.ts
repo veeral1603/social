@@ -58,6 +58,7 @@ async function getPostById(
       saves: p._count.saves,
     },
     savedByMe: p.saves ? p.saves.length > 0 : false,
+    parentId: p.parentId ?? null,
   };
 
   return post;
@@ -221,6 +222,52 @@ async function getPostReplies(
   return replies;
 }
 
+async function getRepliesByUsername(
+  username: string,
+  userId: string,
+): Promise<Post[]> {
+  const normalizedUsername = username.trim().toLowerCase();
+
+  const profile = await prisma.profile.findUnique({
+    where: { username: normalizedUsername },
+    include: {
+      posts: {
+        where: { NOT: { parentId: null } },
+        include: {
+          author: true,
+          _count: { select: { likes: true, replies: true, saves: true } },
+          likes: { where: { userId: userId } },
+          saves: { where: { userId: userId } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!profile) throw new ApiError("Profile not found", 404);
+
+  const replies: Post[] = profile.posts.map((r) => {
+    const reply: Post = {
+      id: r.id,
+      content: r.content,
+      authorId: r.authorId,
+      author: r.author ?? undefined,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      likedByMe: r.likes ? r.likes.length > 0 : false,
+      savedByMe: r.saves ? r.saves.length > 0 : false,
+      counts: {
+        likes: r._count.likes,
+        replies: r._count.replies,
+        saves: r._count.saves,
+      },
+    };
+    return reply;
+  });
+
+  return replies;
+}
+
 export default {
   createPost,
   getPostById,
@@ -230,4 +277,5 @@ export default {
   editPost,
   getPostReplies,
   createReply,
+  getRepliesByUsername,
 };

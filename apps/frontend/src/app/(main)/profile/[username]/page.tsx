@@ -1,5 +1,5 @@
-import UserPosts from "@/src/components/post/UserPosts";
 import ProfileInfo from "@/src/components/profile/ProfileInfo";
+import UserContent from "@/src/components/profile/UserContent";
 import React from "react";
 
 export default async function ProfilePage({
@@ -12,7 +12,7 @@ export default async function ProfilePage({
   return (
     <div>
       <ProfileInfo username={username} />
-      <UserPosts username={username} />
+      <UserContent username={username} />
     </div>
   );
 }

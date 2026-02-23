@@ -15,7 +15,11 @@ export default function DetailedPost({ post }: Props) {
   return (
     <div className="p-4 pb-2 transition duration-300 border-b border-border flex flex-col gap-2">
       <div className="flex items-center gap-2 justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
+          {post.parentId && (
+            <div className="h-10 w-0.5 bg-border absolute left-6 -top-4" />
+          )}
+
           <Link href={`/profile/${post.author?.username}`} className="shrink-0">
             <Avatar src={post.author?.avatar?.url} className="w-12!" />
           </Link>

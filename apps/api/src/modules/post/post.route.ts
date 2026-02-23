@@ -26,4 +26,10 @@ router.get("/user/@:username", optionalAuth, postController.getPostsByUsername);
 
 router.get("/:id/replies", optionalAuth, postController.getPostReplies);
 
+router.get(
+  "/replies/user/@:username",
+  optionalAuth,
+  postController.getRepliesByUsername,
+);
+
 export default router;

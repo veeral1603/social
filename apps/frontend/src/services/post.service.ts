@@ -53,3 +53,8 @@ export const createReply = async (postId: string, data: PostFormData) => {
     throw new Error(error.response?.data.message || "Failed to create reply.");
   }
 };
+
+export const getRepliesByUsername = async (username: string) => {
+  const response = await axiosInstance.get(`/posts/replies/user/@${username}`);
+  return response.data.data;
+};

@@ -83,6 +83,22 @@ const createReply = apiHandler(async (req: Request, res: Response) => {
   successResponse(res, "Reply created successfully", reply, 201);
 });
 
+const getRepliesByUsername = apiHandler(async (req: Request, res: Response) => {
+  const username = req.params["username"];
+  const userId = req.user?.id;
+  if (!username) throw new ApiError("Username is required", 400);
+  const replies = await postService.getRepliesByUsername(
+    username as string,
+    userId as string,
+  );
+  successResponse(
+    res,
+    "Current user replies retrieved successfully",
+    replies,
+    200,
+  );
+});
+
 export default {
   createPost,
   getPostById,
@@ -92,4 +108,5 @@ export default {
   editPost,
   getPostReplies,
   createReply,
+  getRepliesByUsername,
 };

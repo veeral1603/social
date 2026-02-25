@@ -4,10 +4,16 @@ import { z } from "zod";
 
 export type PostFormData = z.infer<typeof postSchema>;
 
+type ImageType = {
+  url: string;
+  fileId: string;
+};
+
 export type Post = {
   id: string;
   authorId: string;
-  content: string;
+  content?: string | undefined | null;
+  images?: ImageType[];
   createdAt: Date;
   updatedAt: Date;
   author?: Profile;

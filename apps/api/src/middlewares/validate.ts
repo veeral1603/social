@@ -1,12 +1,19 @@
-import type { ZodType } from "zod";
 import { errorResponse } from "../utils/apiResponses";
 import type { Request, Response, NextFunction } from "express";
+import type { ZodTypeAny } from "zod";
 
 export const validate =
-  (schema: ZodType) => (req: Request, res: Response, next: NextFunction) => {
-    // console.log("Raw Request Body:", req.body);
-    const result = schema.safeParse(req.body);
-
+  <T extends ZodTypeAny>(schema: T) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    const files = Array.isArray(req.files)
+      ? (req.files as Express.Multer.File[])
+      : undefined;
+    const dataToValidate: unknown = {
+      ...req.body,
+      images: files, // 👈 important
+    };
+    console.log(dataToValidate);
+    const result = schema.safeParse(dataToValidate);
     if (!result.success) {
       return errorResponse(
         res,

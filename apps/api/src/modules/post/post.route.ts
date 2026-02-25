@@ -1,15 +1,27 @@
 import { Router } from "express";
 import postController from "./post.controller";
 import { validate } from "../../middlewares/validate";
-import { editPostSchema, postSchema } from "@repo/shared-types";
+import {
+  editPostSchema,
+  postSchema,
+  postSchemaForBackend,
+} from "@repo/shared-types";
 import requireAuth from "../../middlewares/requireAuth";
 import optionalAuth from "../../middlewares/optionalAuth";
+import { multerUpload } from "../../config/multer.config";
 const router = Router();
 
-router.post("/", requireAuth, validate(postSchema), postController.createPost);
+router.post(
+  "/",
+  requireAuth,
+  multerUpload.array("images", 4),
+  validate(postSchemaForBackend),
+  postController.createPost,
+);
 router.post(
   "/:id/reply",
   requireAuth,
+  multerUpload.array("images", 4),
   validate(postSchema),
   postController.createReply,
 );

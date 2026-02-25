@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import ProfileHoverCard from "../profile/ProfileHoverCard";
+import PostImagePreview from "./PostImagePreview";
 
 interface Props {
   post: Post;
@@ -16,6 +17,7 @@ interface Props {
 export default function Post({ post }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const images = post.images;
 
   const handleNavigate = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -42,7 +44,7 @@ export default function Post({ post }: Props) {
       >
         <Avatar src={post.author?.avatar?.url} className="w-10! md:w-12!" />
       </ProfileHoverCard>
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-2">
         <div className="flex items-center gap-1">
           {/* Name  */}
           <Link
@@ -73,6 +75,62 @@ export default function Post({ post }: Props) {
         <div className="-mt-1">
           <p className="mt-1 whitespace-pre-wrap leading-5">{post.content}</p>
         </div>
+
+        {/* Post Images  */}
+        <div>
+          {images && images.length > 0 && (
+            <div className="w-full">
+              {/* 1 Image */}
+              {images.length === 1 && (
+                <PostImagePreview
+                  file={images[0]?.url as string}
+                  className="w-full aspect-square"
+                />
+              )}
+
+              {/* 2 Images */}
+              {images.length === 2 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {images.map((file, index: number) => (
+                    <PostImagePreview
+                      key={index}
+                      file={file?.url as string}
+                      className="aspect-square"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* 3 Images) */}
+              {images.length === 3 && (
+                <div className="grid grid-cols-2 gap-2 h-80">
+                  <PostImagePreview
+                    file={images[0]?.url as string}
+                    className="row-span-2"
+                  />
+
+                  <PostImagePreview file={images[1]?.url as string} />
+
+                  <PostImagePreview file={images[2]?.url as string} />
+                </div>
+              )}
+
+              {/* 4 Images */}
+              {images.length === 4 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {images.map((file, index: number) => (
+                    <PostImagePreview
+                      key={index}
+                      file={file?.url as string}
+                      className="aspect-square"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         <div data-no-nav>
           <PostActions post={post} />
         </div>

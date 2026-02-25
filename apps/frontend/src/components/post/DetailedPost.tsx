@@ -6,12 +6,14 @@ import PostActions from "./PostActions";
 import Avatar from "../profile/Avatar";
 import Link from "next/link";
 import { formatCount, formatDateTime } from "@/src/lib/utils";
+import PostImagePreview from "./PostImagePreview";
 
 interface Props {
   post: Post;
 }
 
 export default function DetailedPost({ post }: Props) {
+  const images = post.images;
   return (
     <div className="p-4 pb-2 transition duration-300 border-b border-border flex flex-col gap-2">
       <div className="flex items-center gap-2 justify-between">
@@ -46,6 +48,61 @@ export default function DetailedPost({ post }: Props) {
 
       <div className="-mt-1">
         <p className="mt-1 whitespace-pre-wrap leading-5">{post.content}</p>
+      </div>
+
+      {/* Post Images  */}
+      <div className="mt-1">
+        {images && images.length > 0 && (
+          <div className="w-full">
+            {/* 1 Image */}
+            {images.length === 1 && (
+              <PostImagePreview
+                file={images[0]?.url as string}
+                className="w-full aspect-square"
+              />
+            )}
+
+            {/* 2 Images */}
+            {images.length === 2 && (
+              <div className="grid grid-cols-2 gap-2">
+                {images.map((file, index: number) => (
+                  <PostImagePreview
+                    key={index}
+                    file={file?.url as string}
+                    className="aspect-square"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* 3 Images) */}
+            {images.length === 3 && (
+              <div className="grid grid-cols-2 gap-2 h-80">
+                <PostImagePreview
+                  file={images[0]?.url as string}
+                  className="row-span-2"
+                />
+
+                <PostImagePreview file={images[1]?.url as string} />
+
+                <PostImagePreview file={images[2]?.url as string} />
+              </div>
+            )}
+
+            {/* 4 Images */}
+            {images.length === 4 && (
+              <div className="grid grid-cols-2 gap-2">
+                {images.map((file, index: number) => (
+                  <PostImagePreview
+                    key={index}
+                    file={file?.url as string}
+                    className="aspect-square"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className=" pb-2 pt-2 text-sm  text-muted-foreground flex items-center ">

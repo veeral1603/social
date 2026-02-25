@@ -67,7 +67,8 @@ model Post {
   authorId String  @db.ObjectId
   author   Profile @relation(fields: [authorId], references: [id])
 
-  content String
+  content String?
+  images  ImageType[]
 
   parentId String? @db.ObjectId
   parent   Post?   @relation("PostReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)

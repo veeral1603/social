@@ -2,15 +2,29 @@ import type { Post } from "@repo/shared-types";
 import prisma from "../../lib/prisma";
 import ApiError from "../../utils/apiError";
 import { ObjectId } from "bson";
+import { uploadImage } from "../../lib/imagekit";
 
 async function createPost(
   profileId: string,
   content: string,
+  imageFiles: Express.Multer.File[] | undefined,
 ): Promise<Post | null> {
+  let images: { url: string; fileId: string }[] = [];
+  if (imageFiles && imageFiles.length > 0) {
+    images = await Promise.all(
+      imageFiles.map(async (file, index: number) => {
+        const fileName = `${Date.now()}_${index}_${file.originalname}`;
+        const uploadedImage = await uploadImage(file, fileName, "/post-images");
+        return { url: uploadedImage.url, fileId: uploadedImage.fileId };
+      }),
+    );
+  }
+
   const post = await prisma.post.create({
     data: {
       authorId: profileId,
-      content: content,
+      content: content ? content : null,
+      images: images,
       parentId: null,
     },
   });
@@ -46,7 +60,8 @@ async function getPostById(
 
   const post: Post = {
     id: p.id,
-    content: p.content,
+    content: p.content ? p.content : undefined,
+    images: (p.images as { url: string; fileId: string }[]) ?? [],
     authorId: p.authorId,
     author: p.author ?? undefined,
     createdAt: p.createdAt,
@@ -95,6 +110,7 @@ async function getPostsByUsername(
     const post: Post = {
       id: p.id,
       content: p.content,
+      images: (p.images as { url: string; fileId: string }[]) ?? [],
       authorId: p.authorId,
       author: p.author ?? undefined,
       createdAt: p.createdAt,
@@ -131,6 +147,7 @@ async function getCurrentUserPosts(
     const post: Post = {
       id: p.id,
       content: p.content,
+      images: (p.images as { url: string; fileId: string }[]) ?? [],
       authorId: p.authorId,
       author: p.author ?? undefined,
       createdAt: p.createdAt,
@@ -204,6 +221,7 @@ async function getPostReplies(
     const reply: Post = {
       id: re.id,
       content: re.content,
+      images: (re.images as { url: string; fileId: string }[]) ?? [],
       authorId: re.authorId,
       author: re.author ?? undefined,
       createdAt: re.createdAt,
@@ -250,6 +268,7 @@ async function getRepliesByUsername(
     const reply: Post = {
       id: r.id,
       content: r.content,
+      images: (r.images as { url: string; fileId: string }[]) ?? [],
       authorId: r.authorId,
       author: r.author ?? undefined,
       createdAt: r.createdAt,

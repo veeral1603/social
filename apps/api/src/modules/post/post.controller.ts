@@ -8,7 +8,12 @@ import ApiError from "../../utils/apiError";
 const createPost = apiHandler(async (req: Request, res: Response) => {
   const profileId = req.user?.profileId;
   const { content } = req.validatedBody as PostFormData;
-  const post = await postService.createPost(profileId as string, content);
+  const files = req.files as Express.Multer.File[] | undefined;
+  const post = await postService.createPost(
+    profileId as string,
+    content as string,
+    files,
+  );
   successResponse(res, "Post created successfully", post, 201);
 });
 
@@ -78,7 +83,7 @@ const createReply = apiHandler(async (req: Request, res: Response) => {
   const reply = await postService.createReply(
     postId as string,
     profileId as string,
-    content,
+    content as string,
   );
   successResponse(res, "Reply created successfully", reply, 201);
 });

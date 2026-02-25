@@ -25,6 +25,7 @@ async function getFeed({
     return {
       id: p.id,
       content: p.content,
+      images: (p.images as { url: string; fileId: string }[]) ?? [],
       authorId: p.authorId,
       author: p.author ?? undefined,
       createdAt: p.createdAt,

@@ -3,7 +3,7 @@ import axiosInstance from "../lib/axios";
 import { AxiosError } from "axios";
 import { sleep } from "../lib/utils";
 
-export const createPost = async (data: PostFormData) => {
+export const createPost = async (data: FormData) => {
   try {
     const response = await axiosInstance.post("/posts", data);
     return response.data;

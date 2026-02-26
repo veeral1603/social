@@ -2,7 +2,7 @@
 import { useAuthContext } from "@/src/hooks/useAuthContext";
 import { savePost, unsavePost } from "@/src/services/save.service";
 import { Post } from "@repo/shared-types";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
@@ -13,39 +13,57 @@ interface Props {
 }
 
 export default function SaveButton({ isDetailed, post }: Props) {
-  const [isSaved, setIsSaved] = React.useState(post.savedByMe || false);
   const queryClient = useQueryClient();
   const {
     auth: { status },
   } = useAuthContext();
 
-  const save = async () => {
-    try {
-      setIsSaved(true);
-      const response = await savePost(post.id);
-      if (!response.success) throw new Error(response.message);
-      queryClient.invalidateQueries({ queryKey: ["user-saved-posts"] });
-    } catch (e) {
-      setIsSaved(false);
-      toast.error(
-        (e as Error).message || "Failed to save the post. Please try again.",
-      );
-    }
-  };
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (post.savedByMe) return unsavePost(post.id);
+      else return savePost(post.id);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["post", post.id] });
 
-  const unsave = async () => {
-    try {
-      setIsSaved(false);
-      const response = await unsavePost(post.id);
-      if (!response.success) throw new Error(response.message);
-      queryClient.invalidateQueries({ queryKey: ["user-saved-posts"] });
-    } catch (e) {
-      setIsSaved(true);
-      toast.error(
-        (e as Error).message || "Failed to unsave the post. Please try again.",
-      );
-    }
-  };
+      // update individual post data in cache
+      queryClient.setQueryData<Post>(["post", post.id], (old: any) => {
+        if (!old) return old;
+        const oldData = old as Post;
+        const currentSaveCount = oldData.counts?.saves || 0;
+        return {
+          ...oldData,
+          savedByMe: !oldData.savedByMe,
+          counts: {
+            ...oldData.counts,
+            saves: oldData.savedByMe
+              ? currentSaveCount - 1
+              : currentSaveCount + 1,
+          },
+        };
+      });
+
+      // updating the feed cache
+      queryClient.setQueryData<Post[]>(["feed"], (old: any) => {
+        const oldData = old as Post[];
+        if (!old) return old;
+        return oldData.map((p) => {
+          if (p.id === post.id) {
+            const currentCount = p.counts?.saves || 0;
+            return {
+              ...p,
+              savedByMe: !p.savedByMe,
+              counts: {
+                ...p.counts,
+                saves: p.savedByMe ? currentCount - 1 : currentCount + 1,
+              },
+            };
+          }
+          return p;
+        });
+      });
+    },
+  });
 
   const toggleSave = async () => {
     if (status !== "authenticated") {
@@ -54,20 +72,16 @@ export default function SaveButton({ isDetailed, post }: Props) {
       return;
     }
 
-    if (isSaved) {
-      await unsave();
-    } else {
-      await save();
-    }
+    mutation.mutate();
   };
   return (
     <button
-      className={`flex items-center  hover:bg-primary/10 hover:text-primary gap-1 p-1 rounded-full cursor-pointer transition duration-300 ${isDetailed ? "text-sm md:text-lg" : "text-xs"} ${isSaved ? "text-primary" : "text-muted-foreground"}`}
+      className={`flex items-center  hover:bg-primary/10 hover:text-primary gap-1 p-1 rounded-full cursor-pointer transition duration-300 ${isDetailed ? "text-sm md:text-lg" : "text-xs"} ${post.savedByMe ? "text-primary" : "text-muted-foreground"}`}
       onClick={toggleSave}
     >
       <Bookmark
         size={isDetailed ? 20 : 18}
-        fill={isSaved ? "currentColor" : "none"}
+        fill={post.savedByMe ? "currentColor" : "none"}
       />
     </button>
   );

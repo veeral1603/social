@@ -14,11 +14,11 @@ interface Props {
 export default function PostActions({ post, isDetailed }: Props) {
   return (
     <div
-      className={`flex items-center gap-2 justify-between text-muted-foreground ${!isDetailed ? "mt-2" : ""}`}
+      className={`flex items-center gap-2 justify-between text-muted-foreground `}
     >
       <div className="flex max-w-[50%] items-center w-full  justify-between gap-4 ">
         <ReplyButton isDetailed={isDetailed as boolean} post={post} />
-        <RepostButton isDetailed={isDetailed as boolean} />
+        <RepostButton isDetailed={isDetailed as boolean} post={post} />
         <LikeButton post={post} isDetailed={isDetailed as boolean} />
       </div>
 

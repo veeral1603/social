@@ -15,13 +15,13 @@ export default function ProfileTabs({ username }: Props) {
       >
         <TabsTrigger
           value="posts"
-          className="py-4 px-2 hover:bg-muted/70 rounded-none! max-w-25! flex-auto!"
+          className="py-3 px-2 hover:bg-muted/70 rounded-none! max-w-25! flex-auto!"
         >
           Posts
         </TabsTrigger>
         <TabsTrigger
           value="replies"
-          className="py-4 px-2 hover:bg-muted/70 rounded-none! max-w-25! flex-auto!"
+          className="py-3 px-2 hover:bg-muted/70 rounded-none! max-w-25! flex-auto!"
         >
           Replies
         </TabsTrigger>

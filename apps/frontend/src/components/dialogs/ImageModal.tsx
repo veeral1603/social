@@ -22,7 +22,7 @@ export default function ImageModal({ imageUrl, onClose }: Props) {
   }, [onClose]);
   return (
     <div
-      className="fixed inset-0 z-100 bg-black/70 backdrop-blur-[4px]  flex items-center justify-center p-4"
+      className="fixed inset-0 z-100 bg-black/70 backdrop-blur-xs  flex items-center justify-center p-4"
       onClick={(e) => {
         e.stopPropagation();
         onClose();

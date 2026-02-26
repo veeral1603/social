@@ -13,7 +13,7 @@ export default function FloatingPostButton() {
   const path = usePathname();
   if (isOpen) return null;
   const { auth } = useAuthContext();
-  if (!auth) return null;
+  if (auth.status !== "authenticated") return null;
   if (hiddenPaths.some((p) => path.includes(p))) return null; // hide post button on chat page
   return (
     <Button

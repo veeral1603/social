@@ -121,8 +121,10 @@ export default function DetailedPost({ post }: Props) {
 
       <div className="border-y border-border py-2 flex items-center gap-4 text-muted-foreground">
         <div className="gap-1 flex items-center ">
-          <span className="text-foreground font-semibold">358</span>
-          <p>reposts</p>
+          <span className="text-foreground font-semibold">
+            {formatCount(post.counts?.reposts as number)}
+          </span>
+          <p>{(post.counts?.reposts as number) > 1 ? "reposts" : "repost"}</p>
         </div>
         <div className="gap-1 flex items-center ">
           <span className="text-foreground font-semibold">3</span>
@@ -132,13 +134,13 @@ export default function DetailedPost({ post }: Props) {
           <span className="text-foreground font-semibold">
             {formatCount(post.counts?.likes as number)}
           </span>
-          <p>likes</p>
+          <p>{(post.counts?.likes as number) > 1 ? "likes" : "like"}</p>
         </div>
         <div className="gap-1 flex items-center ">
           <span className="text-foreground font-semibold">
             {formatCount(post.counts?.saves as number)}
           </span>
-          <p>saves</p>
+          <p>{(post.counts?.saves as number) > 1 ? "saves" : "save"}</p>
         </div>
       </div>
 

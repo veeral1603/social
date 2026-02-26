@@ -22,10 +22,12 @@ export type Post = {
     likes: number;
     replies: number;
     saves: number;
+    reposts: number;
   };
 
   likedByMe?: boolean;
   savedByMe?: boolean;
+  repostedByMe?: boolean;
 
   parentId?: string | null;
   parent?: Post;

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import ProfileHoverCard from "../profile/ProfileHoverCard";
 import PostImagePreview from "./PostImagePreview";
+import ImageModal from "../dialogs/ImageModal";
 
 interface Props {
   post: Post;
@@ -18,6 +19,7 @@ export default function Post({ post }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const images = post.images;
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
 
   const handleNavigate = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -73,68 +75,90 @@ export default function Post({ post }: Props) {
           </span>
         </div>
         <div className="-mt-1">
-          <p className="mt-1 whitespace-pre-wrap leading-5">{post.content}</p>
+          <p className=" whitespace-pre-wrap leading-5">{post.content}</p>
         </div>
 
         {/* Post Images  */}
-        <div>
-          {images && images.length > 0 && (
-            <div className="w-full">
-              {/* 1 Image */}
-              {images.length === 1 && (
+
+        {images && images.length > 0 && (
+          <div className="w-full">
+            {/* 1 Image */}
+            {images.length === 1 && (
+              <PostImagePreview
+                file={images[0]?.url as string}
+                className="w-full aspect-square"
+                onSelectImage={() => setSelectedImage(images[0]?.url as string)}
+              />
+            )}
+
+            {/* 2 Images */}
+            {images.length === 2 && (
+              <div className="grid grid-cols-2 gap-2">
+                {images.map((file, index: number) => (
+                  <PostImagePreview
+                    key={index}
+                    file={file?.url as string}
+                    className="aspect-square"
+                    onSelectImage={() => setSelectedImage(file?.url as string)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* 3 Images) */}
+            {images.length === 3 && (
+              <div className="grid grid-cols-2 gap-2 h-80">
                 <PostImagePreview
                   file={images[0]?.url as string}
-                  className="w-full aspect-square"
+                  className="row-span-2"
+                  onSelectImage={() =>
+                    setSelectedImage(images[0]?.url as string)
+                  }
                 />
-              )}
 
-              {/* 2 Images */}
-              {images.length === 2 && (
-                <div className="grid grid-cols-2 gap-2">
-                  {images.map((file, index: number) => (
-                    <PostImagePreview
-                      key={index}
-                      file={file?.url as string}
-                      className="aspect-square"
-                    />
-                  ))}
-                </div>
-              )}
+                <PostImagePreview
+                  file={images[1]?.url as string}
+                  onSelectImage={() =>
+                    setSelectedImage(images[1]?.url as string)
+                  }
+                />
 
-              {/* 3 Images) */}
-              {images.length === 3 && (
-                <div className="grid grid-cols-2 gap-2 h-80">
+                <PostImagePreview
+                  file={images[2]?.url as string}
+                  onSelectImage={() =>
+                    setSelectedImage(images[2]?.url as string)
+                  }
+                />
+              </div>
+            )}
+
+            {/* 4 Images */}
+            {images.length === 4 && (
+              <div className="grid grid-cols-2 gap-2">
+                {images.map((file, index: number) => (
                   <PostImagePreview
-                    file={images[0]?.url as string}
-                    className="row-span-2"
+                    key={index}
+                    file={file?.url as string}
+                    className="aspect-square"
+                    onSelectImage={() => setSelectedImage(file?.url as string)}
                   />
-
-                  <PostImagePreview file={images[1]?.url as string} />
-
-                  <PostImagePreview file={images[2]?.url as string} />
-                </div>
-              )}
-
-              {/* 4 Images */}
-              {images.length === 4 && (
-                <div className="grid grid-cols-2 gap-2">
-                  {images.map((file, index: number) => (
-                    <PostImagePreview
-                      key={index}
-                      file={file?.url as string}
-                      className="aspect-square"
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div data-no-nav>
           <PostActions post={post} />
         </div>
       </div>
+
+      {selectedImage && (
+        <ImageModal
+          imageUrl={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
     </div>
   );
 }

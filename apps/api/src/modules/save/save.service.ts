@@ -21,7 +21,7 @@ async function unsavePost(userId: string, postId: string): Promise<void> {
 }
 
 async function getUserSavedPosts(userId: string): Promise<Post[]> {
-  const save = await prisma.save.findMany({
+  const saves = await prisma.save.findMany({
     where: {
       userId,
     },
@@ -40,7 +40,7 @@ async function getUserSavedPosts(userId: string): Promise<Post[]> {
     },
   });
 
-  const posts = save.map((s) => {
+  const posts = saves.map((s) => {
     const p = s.post;
     const post: Post = {
       id: p.id,
@@ -51,6 +51,7 @@ async function getUserSavedPosts(userId: string): Promise<Post[]> {
       updatedAt: p.updatedAt,
       likedByMe: p.likes ? p.likes.length > 0 : false,
       savedByMe: p.saves ? p.saves.length > 0 : false,
+      images: (p.images as { url: string; fileId: string }[]) ?? [],
       counts: {
         likes: p._count.likes,
         replies: p._count.replies,

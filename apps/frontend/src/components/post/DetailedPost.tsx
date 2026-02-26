@@ -7,6 +7,7 @@ import Avatar from "../profile/Avatar";
 import Link from "next/link";
 import { formatCount, formatDateTime } from "@/src/lib/utils";
 import PostImagePreview from "./PostImagePreview";
+import ImageModal from "../dialogs/ImageModal";
 
 interface Props {
   post: Post;
@@ -14,6 +15,7 @@ interface Props {
 
 export default function DetailedPost({ post }: Props) {
   const images = post.images;
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   return (
     <div className="p-4 pb-2 transition duration-300 border-b border-border flex flex-col gap-2">
       <div className="flex items-center gap-2 justify-between">
@@ -51,59 +53,67 @@ export default function DetailedPost({ post }: Props) {
       </div>
 
       {/* Post Images  */}
-      <div className="mt-1">
-        {images && images.length > 0 && (
-          <div className="w-full">
-            {/* 1 Image */}
-            {images.length === 1 && (
+      {images && images.length > 0 && (
+        <div className="w-full mt-2 ">
+          {/* 1 Image */}
+          {images.length === 1 && (
+            <PostImagePreview
+              file={images[0]?.url as string}
+              className="w-full aspect-square"
+              onSelectImage={() => setSelectedImage(images[0]?.url as string)}
+            />
+          )}
+
+          {/* 2 Images */}
+          {images.length === 2 && (
+            <div className="grid grid-cols-2 gap-2">
+              {images.map((file, index: number) => (
+                <PostImagePreview
+                  key={index}
+                  file={file?.url as string}
+                  className="aspect-square"
+                  onSelectImage={() => setSelectedImage(file?.url as string)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 3 Images) */}
+          {images.length === 3 && (
+            <div className="grid grid-cols-2 gap-2 h-80">
               <PostImagePreview
                 file={images[0]?.url as string}
-                className="w-full aspect-square"
+                className="row-span-2"
+                onSelectImage={() => setSelectedImage(images[0]?.url as string)}
               />
-            )}
 
-            {/* 2 Images */}
-            {images.length === 2 && (
-              <div className="grid grid-cols-2 gap-2">
-                {images.map((file, index: number) => (
-                  <PostImagePreview
-                    key={index}
-                    file={file?.url as string}
-                    className="aspect-square"
-                  />
-                ))}
-              </div>
-            )}
+              <PostImagePreview
+                file={images[1]?.url as string}
+                onSelectImage={() => setSelectedImage(images[1]?.url as string)}
+              />
 
-            {/* 3 Images) */}
-            {images.length === 3 && (
-              <div className="grid grid-cols-2 gap-2 h-80">
+              <PostImagePreview
+                file={images[2]?.url as string}
+                onSelectImage={() => setSelectedImage(images[2]?.url as string)}
+              />
+            </div>
+          )}
+
+          {/* 4 Images */}
+          {images.length === 4 && (
+            <div className="grid grid-cols-2 gap-2">
+              {images.map((file, index: number) => (
                 <PostImagePreview
-                  file={images[0]?.url as string}
-                  className="row-span-2"
+                  key={index}
+                  file={file?.url as string}
+                  className="aspect-square"
+                  onSelectImage={() => setSelectedImage(file?.url as string)}
                 />
-
-                <PostImagePreview file={images[1]?.url as string} />
-
-                <PostImagePreview file={images[2]?.url as string} />
-              </div>
-            )}
-
-            {/* 4 Images */}
-            {images.length === 4 && (
-              <div className="grid grid-cols-2 gap-2">
-                {images.map((file, index: number) => (
-                  <PostImagePreview
-                    key={index}
-                    file={file?.url as string}
-                    className="aspect-square"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className=" pb-2 pt-2 text-sm  text-muted-foreground flex items-center ">
         <p>{formatDateTime(post.createdAt)}</p>
@@ -133,6 +143,13 @@ export default function DetailedPost({ post }: Props) {
       </div>
 
       <PostActions post={post} isDetailed={true} />
+
+      {selectedImage && (
+        <ImageModal
+          imageUrl={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
     </div>
   );
 }

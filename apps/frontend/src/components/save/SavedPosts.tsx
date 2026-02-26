@@ -16,6 +16,7 @@ export default function SavedPosts() {
       return failureCount < 2;
     },
   });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">

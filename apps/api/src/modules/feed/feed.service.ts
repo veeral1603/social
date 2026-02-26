@@ -13,10 +13,13 @@ async function getFeed({
     },
     include: {
       author: true,
-      _count: { select: { likes: true, replies: true, saves: true } },
+      _count: {
+        select: { likes: true, replies: true, saves: true, reposts: true },
+      },
       ...(userId && {
         likes: { where: { userId: userId } },
         saves: { where: { userId: userId } },
+        reposts: { where: { userId: userId } },
       }),
     },
   });
@@ -30,14 +33,16 @@ async function getFeed({
       author: p.author ?? undefined,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
-      likedByMe: p.likes ? p.likes.length > 0 : false,
       counts: {
         likes: p._count.likes,
         replies: p._count.replies,
         saves: p._count.saves,
+        reposts: p._count.reposts,
       },
-      parentId: p.parentId,
+      likedByMe: p.likes ? p.likes.length > 0 : false,
       savedByMe: p.saves ? p.saves.length > 0 : false,
+      repostedByMe: p.reposts ? p.reposts.length > 0 : false,
+      parentId: p.parentId,
     };
   });
 

@@ -10,6 +10,7 @@ import userRoutes from "../modules/user/user.route";
 import messageRoutes from "../modules/message/message.route";
 import likeRoutes from "../modules/like/like.route";
 import saveRoutes from "../modules/save/save.route";
+import repostRoutes from "../modules/repost/repost.route";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use("/auth", authRoutes);
 router.use("/profiles", profileRoutes);
 router.use("/posts", postRoutes);
 router.use("/posts", requireAuth, likeRoutes); //Like routes are nested under posts and require authentication
+router.use("/posts", requireAuth, repostRoutes);
 router.use("/follows", requireAuth, followRoutes);
 router.use("/feed", feedRoutes);
 router.use("/conversations", requireAuth, conversationRoutes);
